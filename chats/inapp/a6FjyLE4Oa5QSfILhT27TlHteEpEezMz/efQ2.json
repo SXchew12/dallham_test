@@ -1,0 +1,90 @@
+[
+  {
+    "msgType": "text",
+    "sender": "user",
+    "modelId": "codeyon-it-services-support",
+    "text": "hey there",
+    "msgObj": {
+      "text": "hey there"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723915257.76
+  },
+  {
+    "msgType": "text",
+    "sender": "assistant",
+    "modelId": "codeyon-it-services-support",
+    "text": "Hello! How can I assist you today?",
+    "msgObj": {
+      "text": "Hello! How can I assist you today?"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723915259.144
+  },
+  {
+    "msgType": "text",
+    "sender": "user",
+    "modelId": "codeyon-it-services-support",
+    "text": "who are you ?",
+    "msgObj": {
+      "text": "who are you ?"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723915265.711
+  },
+  {
+    "msgType": "text",
+    "sender": "assistant",
+    "modelId": "codeyon-it-services-support",
+    "text": "I am an assistant from Codeyon IT Services. We specialize in providing high-quality IT services and custom SaaS software solutions. How can I help you today?",
+    "msgObj": {
+      "text": "I am an assistant from Codeyon IT Services. We specialize in providing high-quality IT services and custom SaaS software solutions. How can I help you today?"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723915266.999
+  },
+  {
+    "msgType": "text",
+    "sender": "user",
+    "modelId": "codeyon-it-services-support",
+    "text": "what are you opening hours ",
+    "msgObj": {
+      "text": "what are you opening hours "
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723915274.534
+  },
+  {
+    "msgType": "text",
+    "sender": "assistant",
+    "modelId": "codeyon-it-services-support",
+    "text": "Our opening hours are from 10 AM to 6 PM, Monday to Friday. How can we assist you today?",
+    "msgObj": {
+      "text": "Our opening hours are from 10 AM to 6 PM, Monday to Friday. How can we assist you today?"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723915276.03
+  },
+  {
+    "msgType": "text",
+    "sender": "user",
+    "modelId": "codeyon-it-services-support",
+    "text": "what services you offer ?",
+    "msgObj": {
+      "text": "what services you offer ?"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723971602.191
+  },
+  {
+    "msgType": "text",
+    "sender": "assistant",
+    "modelId": "codeyon-it-services-support",
+    "text": "At Codeyon IT Services, we offer a range of high-quality IT solutions, including:\n\n1. **Custom SaaS Software Development**: Tailored software solutions designed to meet your specific business needs.\n2. **Web Development**: Creating responsive and scalable websites with the latest technologies.\n3. **Mobile App Development**: Developing user-friendly mobile applications for both iOS and Android platforms.\n4. **Cloud Services**: Providing cloud integration, migration, and management services to ensure your data and applications are efficiently handled.\n5. **IT Consulting**: Offering strategic advice and solutions to enhance your IT infrastructure and operations.\n6. **UI/UX Design**: Designing intuitive and engaging user interfaces and experiences for your digital products.\n7. **Cybersecurity Solutions**: Implementing robust security measures to protect your data and IT systems.\n8. **Data Analytics**: Offering data analysis services to help you make informed business decisions.\n\nFeel free to contact us during our business hours for any inquiries or assistance with your IT needs!",
+    "msgObj": {
+      "text": "At Codeyon IT Services, we offer a range of high-quality IT solutions, including:\n\n1. **Custom SaaS Software Development**: Tailored software solutions designed to meet your specific business needs.\n2. **Web Development**: Creating responsive and scalable websites with the latest technologies.\n3. **Mobile App Development**: Developing user-friendly mobile applications for both iOS and Android platforms.\n4. **Cloud Services**: Providing cloud integration, migration, and management services to ensure your data and applications are efficiently handled.\n5. **IT Consulting**: Offering strategic advice and solutions to enhance your IT infrastructure and operations.\n6. **UI/UX Design**: Designing intuitive and engaging user interfaces and experiences for your digital products.\n7. **Cybersecurity Solutions**: Implementing robust security measures to protect your data and IT systems.\n8. **Data Analytics**: Offering data analysis services to help you make informed business decisions.\n\nFeel free to contact us during our business hours for any inquiries or assistance with your IT needs!"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723971606.287
+  }
+]

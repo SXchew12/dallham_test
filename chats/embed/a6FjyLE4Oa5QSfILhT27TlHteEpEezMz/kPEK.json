@@ -1,0 +1,46 @@
+[
+  {
+    "msgType": "text",
+    "sender": "user",
+    "modelId": "gemini-model",
+    "text": "hey",
+    "msgObj": {
+      "text": "hey"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723289066.262
+  },
+  {
+    "msgType": "text",
+    "sender": "assistant",
+    "modelId": "gemini-model",
+    "text": "Hey there! What can I do for you today? I'm John Doe, an assistant at Codeyon IT services. \n",
+    "msgObj": {
+      "text": "Hey there! What can I do for you today? I'm John Doe, an assistant at Codeyon IT services. \n"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723289068.575
+  },
+  {
+    "msgType": "text",
+    "sender": "user",
+    "modelId": "gemini-model",
+    "text": "how can you help me ?",
+    "msgObj": {
+      "text": "how can you help me ?"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723289078.761
+  },
+  {
+    "msgType": "text",
+    "sender": "assistant",
+    "modelId": "gemini-model",
+    "text": "I'm here to help you with anything related to IT services!  Here are some ways I can assist you:\n\n**For Codeyon customers:**\n\n* **Technical Support:**  If you're experiencing issues with your computer, network, or software, I can help troubleshoot the problem. \n* **Service inquiries:** Need information about our services, pricing, or availability? I can provide details and answer your questions.\n* **Account Management:**  Want to update your account information, manage your subscriptions, or request a quote? I can guide you through the process.\n* **Project assistance:**  If you're working on a project with Codeyon, I can provide resources, answer questions, and keep you updated on its progress. \n\n**For potential customers:**\n\n* **Learn about Codeyon:**  I can explain our services and how they can benefit you.\n* **Get a quote:**  I can help you estimate the cost of our services for your specific needs.\n* **Schedule a consultation:**  Let's set up a meeting to discuss your IT requirements in detail.\n\n**General IT questions:**\n\n* **Technology advice:**  Need recommendations for software, hardware, or security solutions? I can offer my expertise. \n* **Troubleshooting tips:**  Stuck on a tech problem? I can help you find solutions and resources.\n* **Understanding IT concepts:**  Confused about terminology or how things work? I can explain it in simple terms.\n\nJust tell me what you need, and I'll do my best to help! 😊\n",
+    "msgObj": {
+      "text": "I'm here to help you with anything related to IT services!  Here are some ways I can assist you:\n\n**For Codeyon customers:**\n\n* **Technical Support:**  If you're experiencing issues with your computer, network, or software, I can help troubleshoot the problem. \n* **Service inquiries:** Need information about our services, pricing, or availability? I can provide details and answer your questions.\n* **Account Management:**  Want to update your account information, manage your subscriptions, or request a quote? I can guide you through the process.\n* **Project assistance:**  If you're working on a project with Codeyon, I can provide resources, answer questions, and keep you updated on its progress. \n\n**For potential customers:**\n\n* **Learn about Codeyon:**  I can explain our services and how they can benefit you.\n* **Get a quote:**  I can help you estimate the cost of our services for your specific needs.\n* **Schedule a consultation:**  Let's set up a meeting to discuss your IT requirements in detail.\n\n**General IT questions:**\n\n* **Technology advice:**  Need recommendations for software, hardware, or security solutions? I can offer my expertise. \n* **Troubleshooting tips:**  Stuck on a tech problem? I can help you find solutions and resources.\n* **Understanding IT concepts:**  Confused about terminology or how things work? I can explain it in simple terms.\n\nJust tell me what you need, and I'll do my best to help! 😊\n"
+    },
+    "uid": "a6FjyLE4Oa5QSfILhT27TlHteEpEezMz",
+    "timestamp": 1723289082.81
+  }
+]
