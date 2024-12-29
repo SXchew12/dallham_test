@@ -4,6 +4,8 @@ const app = express();
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const path = require("path");
+const errorHandler = require('./middlewares/error');
+const { testConnection } = require('./database/config');
 
 const PORT = process.env.PORT || 3011;
 
@@ -18,6 +20,20 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(fileUpload());
+
+app.use(async (req, res, next) => {
+    try {
+        await testConnection();
+        next();
+    } catch (error) {
+        console.error('Database connection failed:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Database connection failed',
+            error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : error.message
+        });
+    }
+});
 
 // routers
 const userRoute = require("./routes/user");
@@ -42,14 +58,26 @@ const videoRoute = require("./routes/video");
 const { processTask } = require("./loops/render/render");
 app.use("/api/video", videoRoute);
 
-app.get('/api/health', (req, res) => {
-    res.json({
-        success: true,
-        environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString(),
-        message: 'API is running',
-        version: '4.0'
-    });
+app.get('/api/health', async (req, res) => {
+    try {
+        await testConnection();
+        res.json({
+            success: true,
+            environment: process.env.NODE_ENV,
+            timestamp: new Date().toISOString(),
+            message: 'API is running',
+            version: '4.0',
+            database: {
+                connected: true,
+                host: process.env.DBHOST
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : error.message
+        });
+    }
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -69,6 +97,8 @@ app.get("*", function (request, response) {
 setTimeout(() => {
   processTask();
 }, 2000);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

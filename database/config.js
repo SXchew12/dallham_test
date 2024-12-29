@@ -1,4 +1,4 @@
-const mysql = require('mysql')
+const mysql = require('mysql');
 
 let config = {
     host: process.env.DBHOST,
@@ -6,36 +6,38 @@ let config = {
     password: process.env.DBPASS,
     database: process.env.DBNAME,
     port: process.env.DBPORT || 3306,
-    connectionLimit: 10,
-    connectTimeout: 60000
+    connectionLimit: 1,
+    connectTimeout: 60000,
+    waitForConnections: true,
+    queueLimit: 0
 };
 
-// Only add SSL for production
 if (process.env.NODE_ENV === 'production') {
-    config.ssl = {
-        rejectUnauthorized: false // Changed this to false for development
+    config = {
+        ...config,
+        ssl: {
+            rejectUnauthorized: true
+        }
     };
 }
 
-const connection = mysql.createConnection(config);
+// Use connection pool instead of single connection for serverless
+const pool = mysql.createPool(config);
 
-// Add error handling and reconnection logic
-connection.on('error', function(err) {
-    console.error('Database error:', err);
-    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-        console.log('Reconnecting to database...');
-        connection.connect();
-    } else {
-        throw err;
-    }
-});
+// Test connection function
+const testConnection = () => {
+    return new Promise((resolve, reject) => {
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Database Connection Error:', err);
+                reject(err);
+                return;
+            }
+            console.log('Database Connected Successfully');
+            connection.release();
+            resolve();
+        });
+    });
+};
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to database:', err);
-        return;
-    }
-    console.log('Connected to database successfully');
-});
-
-module.exports = connection;
+module.exports = { pool, testConnection };
