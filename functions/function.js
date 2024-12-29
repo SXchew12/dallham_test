@@ -1040,6 +1040,12 @@ async function downloadAndExtractFile(filesObject, outputFolderPath) {
   }
 }
 
+const getUploadPath = () => {
+    return process.env.NODE_ENV === 'production'
+        ? '/tmp'  // Vercel temporary directory
+        : path.join(__dirname, '../client/public/media');
+};
+
 module.exports = {
   addPriceColor,
   isValidEmail,
@@ -1067,4 +1073,5 @@ module.exports = {
   sendEmail,
   folderExists,
   downloadAndExtractFile,
+  getUploadPath,
 };

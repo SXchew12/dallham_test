@@ -1,26 +1,33 @@
 const mysql = require('mysql')
 
-const con = mysql.createPool({
-    connectionLimit: 1000,
-    host: process.env.DBHOST,
-    port: 3306,
-    user: process.env.DBUSER,
-    password: process.env.DBPASS,
-    database: process.env.DBNAME,
-    charset: 'utf8mb4'
-})
-
-
-con.getConnection((err) => {
-    if (err) {
-        console.log({
-            err: err,
-            msg: "Database connected error"
-        })
-        return
-    } else {
-        console.log('Database has been connected')
+let config = {
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    ssl: {
+        rejectUnauthorized: true
     }
-})
+};
 
-module.exports = con
+// For production database (e.g., PlanetScale, AWS RDS)
+if (process.env.NODE_ENV === 'production') {
+    config = {
+        ...config,
+        ssl: {
+            rejectUnauthorized: true
+        }
+    };
+}
+
+const connection = mysql.createConnection(config);
+
+connection.connect((err) => {
+    if (err) {
+        console.error('Error connecting to database:', err);
+        return;
+    }
+    console.log('Connected to database');
+});
+
+module.exports = connection;
