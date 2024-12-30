@@ -6,7 +6,10 @@
             "use": "@vercel/node",
             "config": {
                 "maxDuration": 60,
-                "memory": 3008
+                "memory": 3008,
+                "includeFiles": [
+                    "srt/**/*"
+                ]
             }
         }
     ],
