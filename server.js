@@ -6,10 +6,18 @@ const fileUpload = require("express-fileupload");
 const path = require("path");
 const { testConnection } = require('./database/config');
 
-// Log environment variables for debugging
-console.log('Environment Variables:', {
+// Log environment for debugging
+console.log('Environment:', {
     NODE_ENV: process.env.NODE_ENV,
-    MOCK_MODE: process.env.MOCK_MODE
+    MYSQLHOST: process.env.MYSQLHOST,
+    MYSQLDATABASE: process.env.MYSQLDATABASE
+});
+
+// Test database connection
+testConnection().then(connected => {
+    if (!connected) {
+        console.error('Failed to connect to database');
+    }
 });
 
 // CORS configuration

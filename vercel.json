@@ -28,9 +28,5 @@
             "src": "/(.*)",
             "dest": "server.js"
         }
-    ],
-    "env": {
-        "NODE_ENV": "production",
-        "MOCK_MODE": "true"
-    }
+    ]
 } 
