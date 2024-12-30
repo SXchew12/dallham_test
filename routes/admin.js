@@ -345,37 +345,61 @@ router.post("/del_brand_logo", adminValidator, async (req, res) => {
 
 // get all faq
 router.get("/get_faq", async (req, res) => {
-  try {
-    const data = await query(`SELECT * FROM faq`, []);
-    res.json({ data, success: true });
-  } catch (err) {
-    res.json({ success: false, msg: "something went wrong" });
-    console.log(err);
-  }
+    try {
+        const data = await query(`SELECT * FROM faq`, []);
+        
+        // Add logging for debugging
+        console.log('FAQ data retrieved:', {
+            count: data.length,
+            success: true
+        });
+        
+        res.json({ data, success: true });
+    } catch (err) {
+        console.error('FAQ fetch error:', {
+            error: err.message,
+            stack: err.stack,
+            code: err.code
+        });
+        
+        res.status(500).json({ 
+            success: false, 
+            msg: "Database error occurred",
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
 });
 
-// add faq
+// add faq with better error handling
 router.post("/add_faq", adminValidator, async (req, res) => {
-  try {
-    const { question, answer } = req.body;
+    try {
+        const { question, answer } = req.body;
 
-    if (!answer || !question) {
-      return res.json({
-        success: false,
-        msg: "Please provide question and answer both",
-      });
+        if (!answer || !question) {
+            return res.status(400).json({
+                success: false,
+                msg: "Please provide question and answer both"
+            });
+        }
+
+        await query(
+            `INSERT INTO faq (question, answer) VALUES (?, ?)`,
+            [question, answer]
+        );
+
+        res.json({ success: true, msg: "FAQ added successfully" });
+    } catch (err) {
+        console.error('Add FAQ error:', {
+            error: err.message,
+            stack: err.stack
+        });
+        
+        res.status(500).json({ 
+            success: false, 
+            msg: "Failed to add FAQ",
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
     }
-
-    await query(`INSERT INTO faq (question, answer) VALUES (?,?)`, [
-      question,
-      answer,
-    ]);
-
-    res.json({ success: true, msg: "Faq was added" });
-  } catch (err) {
-    res.json({ success: false, msg: "something went wrong" });
-    console.log(err);
-  }
 });
 
 // del faq

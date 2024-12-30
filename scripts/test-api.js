@@ -19,7 +19,7 @@ async function testAPI() {
             },
             body: JSON.stringify({
                 email: 'admin@admin.com',
-                password: 'admin123'
+                password: 'password'
             })
         });
 
