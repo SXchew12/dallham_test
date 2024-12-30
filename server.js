@@ -17,7 +17,35 @@ app.use((req, res, next) => {
     next();
 });
 
-// Add welcome route
+// Basic middleware
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+        ? [process.env.FRONTENDURI]
+        : 'http://localhost:3011',
+    credentials: true
+}));
+app.use(fileUpload());
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+    try {
+        await testConnection();
+        res.json({
+            success: true,
+            environment: process.env.NODE_ENV,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : error.message
+        });
+    }
+});
+
+// Welcome route
 app.get('/', (req, res) => {
     res.json({
         success: true,
@@ -27,19 +55,10 @@ app.get('/', (req, res) => {
     });
 });
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
-// app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? [process.env.FRONTENDURI]
-        : 'http://localhost:3011',
-    credentials: true
-}));
-app.use(express.json());
-app.use(fileUpload());
-
+// Database connection middleware
 app.use(async (req, res, next) => {
+    if (req.path === '/api/health') return next();
+    
     try {
         await testConnection();
         next();
@@ -53,7 +72,7 @@ app.use(async (req, res, next) => {
     }
 });
 
-// routers
+// Routes
 const userRoute = require("./routes/user");
 app.use("/api/user", userRoute);
 
@@ -73,71 +92,27 @@ const embedRoute = require("./routes/embed");
 app.use("/api/embed", embedRoute);
 
 const videoRoute = require("./routes/video");
-const { processTask } = require("./loops/render/render");
 app.use("/api/video", videoRoute);
 
-app.get('/api/health', async (req, res) => {
-    try {
-        await testConnection();
-        res.json({
-            success: true,
-            environment: process.env.NODE_ENV,
-            timestamp: new Date().toISOString(),
-            message: 'API is running',
-            version: '4.0',
-            database: {
-                connected: true,
-                host: process.env.DBHOST
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : error.message
-        });
-    }
-});
-
-if (process.env.NODE_ENV === 'production') {
-    console.log('Running in production mode');
-    console.log('Frontend URI:', process.env.FRONTENDURI);
-    console.log('Backend URI:', process.env.BACKURI);
-}
-
+// Static files
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'public')));
 } else {
     app.use(express.static(path.resolve(__dirname, "./client/public")));
 }
 
-app.get("*", function (request, response) {
-  response.sendFile(path.resolve(__dirname, "./client/public", "index.html"));
-});
-
-setTimeout(() => {
-  processTask();
-}, 2000);
-
+// Error handler
 app.use(errorHandler);
 
-// For local development
+// Development server
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
-        console.log('\x1b[36m%s\x1b[0m', '🚀 Welcome to DallHam API v4.0');  // Cyan color
-        console.log('\x1b[32m%s\x1b[0m', `🌍 Server is running on port ${PORT}`);  // Green color
-        console.log('\x1b[33m%s\x1b[0m', `⚙️  Environment: ${process.env.NODE_ENV}`);  // Yellow color
-        console.log('\x1b[34m%s\x1b[0m', `🗄️  Database: ${process.env.DBHOST}`);  // Blue color
-        console.log('\x1b[35m%s\x1b[0m', '🌟 Happy coding!');  // Purple color
+        console.log('\x1b[36m%s\x1b[0m', '🚀 Welcome to DallHam API v4.0');
+        console.log('\x1b[32m%s\x1b[0m', `🌍 Server is running on port ${PORT}`);
+        console.log('\x1b[33m%s\x1b[0m', `⚙️  Environment: ${process.env.NODE_ENV}`);
+        console.log('\x1b[34m%s\x1b[0m', `🗄️  Database: ${process.env.DBHOST}`);
     });
 }
 
 // Export for Vercel
 module.exports = app;
-
-// Add environment variable check
-console.log('Environment Variables:', {
-    NODE_ENV: process.env.NODE_ENV,
-    DBHOST: process.env.DBHOST,
-    PORT: process.env.PORT,
-    // Don't log sensitive info like passwords
-});

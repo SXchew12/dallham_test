@@ -8,15 +8,26 @@
     ],
     "routes": [
         {
+            "src": "/api/(.*)",
+            "dest": "/server.js"
+        },
+        {
             "src": "/(.*)",
             "dest": "/server.js"
         }
     ],
+    "functions": {
+        "server.js": {
+            "memory": 1024,
+            "maxDuration": 10
+        }
+    },
     "env": {
         "NODE_ENV": "production",
         "DBHOST": "@dbhost",
         "DBNAME": "@dbname",
         "DBUSER": "@dbuser",
+        "DBPASS": "@dbpass",
         "DBPORT": "@dbport",
         "JWTKEY": "@jwtkey",
         "FRONTENDURI": "@frontenduri",
