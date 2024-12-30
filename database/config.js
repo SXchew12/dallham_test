@@ -1,43 +1,50 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 const config = {
-    host: process.env.DBHOST,
-    user: process.env.DBUSER,
-    password: process.env.DBPASS,
-    database: process.env.DBNAME,
-    port: process.env.DBPORT || 3306,
-    connectionLimit: 10,
-    connectTimeout: 30000,
-    waitForConnections: true,
-    queueLimit: 0,
-    ssl: process.env.NODE_ENV === 'production' ? {
-        rejectUnauthorized: true,
-        ca: process.env.DB_CA_CERT
-    } : false
+    development: {
+        host: process.env.DBHOST || 'localhost',
+        user: process.env.DBUSER || 'root',
+        password: process.env.DBPASS || 'localhost',
+        database: process.env.DBNAME || 'dallham',
+        port: process.env.DBPORT || '3306',
+        ssl: process.env.NODE_ENV === 'production' ? {
+            rejectUnauthorized: true
+        } : undefined
+    },
+    production: {
+        host: process.env.DBHOST,
+        user: process.env.DBUSER,
+        password: process.env.DBPASS,
+        database: process.env.DBNAME,
+        port: process.env.DBPORT,
+        ssl: {
+            rejectUnauthorized: true
+        }
+    }
 };
 
+const dbConfig = process.env.NODE_ENV === 'production' ? config.production : config.development;
+
 console.log('Database Config:', {
-    host: process.env.DBHOST,
-    database: process.env.DBNAME,
-    port: process.env.DBPORT,
-    ssl: config.ssl ? 'Enabled' : 'Disabled'
+    host: dbConfig.host,
+    database: dbConfig.database,
+    port: dbConfig.port,
+    ssl: dbConfig.ssl ? 'Enabled' : 'Disabled'
 });
 
-const pool = mysql.createPool(config);
+const pool = mysql.createPool(dbConfig).promise();
 
-const testConnection = () => {
-    return new Promise((resolve, reject) => {
-        pool.getConnection((err, connection) => {
-            if (err) {
-                console.error('Database Connection Failed:', err);
-                reject(err);
-                return;
-            }
-            console.log('Database Connected Successfully');
-            connection.release();
-            resolve();
-        });
-    });
+// Add test connection function
+const testConnection = async () => {
+    try {
+        const connection = await pool.getConnection();
+        console.log('Database Connected Successfully');
+        connection.release();
+        return true;
+    } catch (error) {
+        console.error('Database Connection Failed:', error);
+        throw error;
+    }
 };
 
 module.exports = { pool, testConnection };

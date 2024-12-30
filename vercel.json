@@ -19,5 +19,16 @@
             "src": "/(.*)",
             "dest": "server.js"
         }
-    ]
+    ],
+    "env": {
+        "NODE_ENV": "production",
+        "HOST": "localhost",
+        "PORT": "3011",
+        "DBHOST": "localhost",
+        "DBNAME": "dallham",
+        "DBUSER": "root",
+        "DBPASS": "localhost",
+        "DBPORT": "3306",
+        "JWTKEY": "NCRUp5hKovUAcZd9OwIw0BCKmjZj9JxpNCRUp5hKovUAcZd9OwIw0BCKmjZj9JxpNCRUp5hKovUAcZd9OwIw0BCKmjZj9Jxp"
+    }
 } 
