@@ -11,6 +11,11 @@ const {
   sendEmail,
 } = require("../functions/function.js");
 
+// Mock password comparison for testing
+const mockComparePassword = (password) => {
+    return password === 'admin123';
+};
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -20,10 +25,35 @@ router.post("/login", async (req, res) => {
         msg: "Please fill email and password",
       });
     }
-    // check for user
-    const userFind = await query(`SELECT * FROM admin WHERE email = ?`, [
-      email,
-    ]);
+
+    const isMockMode = process.env.MOCK_MODE === 'true';
+    
+    if (isMockMode) {
+      // Mock login logic
+      if (email === 'admin@example.com' && mockComparePassword(password)) {
+        const token = sign(
+          {
+            uid: 'admin-123',
+            role: 'admin',
+            email: email,
+            password: '$2a$10$mockhashedpassword'
+          },
+          process.env.JWTKEY,
+          { expiresIn: '24h' }
+        );
+        return res.json({
+          success: true,
+          token
+        });
+      }
+      return res.json({ 
+        success: false, 
+        msg: "Invalid credentials" 
+      });
+    }
+
+    // Real login logic continues...
+    const userFind = await query(`SELECT * FROM admin WHERE email = ?`, [email]);
     if (userFind.length < 1) {
       return res.json({ msg: "Invalid credentials found" });
     }
@@ -50,8 +80,8 @@ router.post("/login", async (req, res) => {
       });
     }
   } catch (err) {
+    console.error('Admin login error:', err);
     res.json({ success: false, msg: "something went wrong" });
-    console.log(err);
   }
 });
 

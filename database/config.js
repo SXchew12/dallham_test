@@ -38,9 +38,24 @@ const mockPool = {
         getConnection: async () => ({
             release: () => console.log('Mock connection released')
         }),
-        query: async () => {
-            console.log('Mock query executed');
-            return [[]];  // Return empty result
+        query: async (sql, params) => {
+            console.log('Mock query executed:', sql);
+            
+            // Mock admin login query
+            if (sql.includes('SELECT * FROM admin WHERE email = ?')) {
+                const [email] = params;
+                if (email === 'admin@example.com') {
+                    return [[{
+                        uid: 'admin-123',
+                        email: 'admin@example.com',
+                        password: '$2a$10$mockhashedpassword', // Mock hashed password
+                        role: 'admin'
+                    }]];
+                }
+                return [[]];
+            }
+            
+            return [[]];  // Default empty result
         }
     })
 };
