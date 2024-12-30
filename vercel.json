@@ -5,10 +5,10 @@
             "src": "server.js",
             "use": "@vercel/node",
             "config": {
-                "maxDuration": 60,
-                "memory": 3008,
                 "includeFiles": [
-                    "srt/**/*"
+                    "srt/**/*",
+                    "chats/**/*",
+                    "public/**/*"
                 ]
             }
         }
@@ -16,22 +16,17 @@
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "server.js"
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization"
+            },
+            "dest": "server.js",
+            "continue": true
         },
         {
             "src": "/(.*)",
             "dest": "server.js"
         }
-    ],
-    "env": {
-        "NODE_ENV": "production",
-        "HOST": "localhost",
-        "PORT": "3011",
-        "DBHOST": "localhost",
-        "DBNAME": "dallham",
-        "DBUSER": "root",
-        "DBPASS": "localhost",
-        "DBPORT": "3306",
-        "JWTKEY": "NCRUp5hKovUAcZd9OwIw0BCKmjZj9JxpNCRUp5hKovUAcZd9OwIw0BCKmjZj9JxpNCRUp5hKovUAcZd9OwIw0BCKmjZj9Jxp"
-    }
+    ]
 } 
