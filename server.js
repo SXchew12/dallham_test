@@ -101,6 +101,20 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, "./client/public")));
 }
 
+// Add before errorHandler
+app.use((err, req, res, next) => {
+    console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        path: req.path,
+        method: req.method,
+        body: req.body,
+        query: req.query,
+        headers: req.headers
+    });
+    next(err);
+});
+
 // Error handler
 app.use(errorHandler);
 

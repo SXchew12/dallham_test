@@ -8,21 +8,21 @@ const randomstring = require("randomstring");
 const unzipper = require("unzipper");
 const nodemailer = require("nodemailer");
 
-function ensureFileWithEmptyArray(filePath) {
-  const dir = path.dirname(filePath);
-
-  // Ensure the directory exists
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  // Check if the file exists
-  if (!fs.existsSync(filePath)) {
-    // Create the file with an empty JSON array
-    fs.writeFileSync(filePath, JSON.stringify([]), "utf8");
-    console.log(`File created at ${filePath} with empty array.`);
-  } else {
-    console.log(`File already exists at ${filePath}.`);
+async function ensureFileWithEmptyArray(filePath) {
+  try {
+    const dir = path.dirname(filePath);
+    await fs.promises.mkdir(dir, { recursive: true });
+    
+    try {
+      await fs.promises.access(filePath);
+      console.log(`File exists at ${filePath}`);
+    } catch {
+      await fs.promises.writeFile(filePath, JSON.stringify([]), 'utf8');
+      console.log(`File created at ${filePath}`);
+    }
+  } catch (error) {
+    console.error('Error in ensureFileWithEmptyArray:', error);
+    throw error;
   }
 }
 
@@ -1042,8 +1042,8 @@ async function downloadAndExtractFile(filesObject, outputFolderPath) {
 
 const getUploadPath = () => {
     return process.env.NODE_ENV === 'production'
-        ? '/tmp'  // Vercel temporary directory
-        : path.join(__dirname, '../client/public/media');
+        ? '/tmp'  // Vercel's temp directory
+        : path.join(__dirname, '../public/media');
 };
 
 module.exports = {
