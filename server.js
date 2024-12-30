@@ -9,6 +9,24 @@ const { testConnection } = require('./database/config');
 
 const PORT = process.env.PORT || 3011;
 
+// Add Vercel-specific headers
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
+
+// Add welcome route
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Welcome to DallHam API',
+        version: '4.0',
+        status: 'running'
+    });
+});
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 // app.use(express.urlencoded({ extended: true }));
@@ -100,11 +118,19 @@ setTimeout(() => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Database: ${process.env.DBHOST}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log('\x1b[36m%s\x1b[0m', '🚀 Welcome to DallHam API v4.0');  // Cyan color
+        console.log('\x1b[32m%s\x1b[0m', `🌍 Server is running on port ${PORT}`);  // Green color
+        console.log('\x1b[33m%s\x1b[0m', `⚙️  Environment: ${process.env.NODE_ENV}`);  // Yellow color
+        console.log('\x1b[34m%s\x1b[0m', `🗄️  Database: ${process.env.DBHOST}`);  // Blue color
+        console.log('\x1b[35m%s\x1b[0m', '🌟 Happy coding!');  // Purple color
+    });
+}
+
+// Export for Vercel
+module.exports = app;
 
 // Add environment variable check
 console.log('Environment Variables:', {
