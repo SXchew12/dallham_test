@@ -6,6 +6,12 @@ const fileUpload = require("express-fileupload");
 const path = require("path");
 const { testConnection } = require('./database/config');
 
+// Log environment variables for debugging
+console.log('Environment Variables:', {
+    NODE_ENV: process.env.NODE_ENV,
+    MOCK_MODE: process.env.MOCK_MODE
+});
+
 // CORS configuration
 app.use(cors({
     origin: '*',
@@ -40,7 +46,11 @@ app.get('/api/health', (req, res) => {
         success: true,
         message: 'API is running',
         environment: process.env.NODE_ENV,
-        mockMode: process.env.MOCK_MODE === 'true'
+        mockMode: process.env.MOCK_MODE === 'true',
+        debug: {
+            mockModeValue: process.env.MOCK_MODE,
+            nodeEnv: process.env.NODE_ENV
+        }
     });
 });
 
