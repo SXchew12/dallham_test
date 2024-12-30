@@ -103,5 +103,13 @@ app.use(errorHandler);
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Database: ${process.env.DATABASE_HOST}`);
+    console.log(`Database: ${process.env.DBHOST}`);
+});
+
+// Add environment variable check
+console.log('Environment Variables:', {
+    NODE_ENV: process.env.NODE_ENV,
+    DBHOST: process.env.DBHOST,
+    PORT: process.env.PORT,
+    // Don't log sensitive info like passwords
 });
