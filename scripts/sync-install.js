@@ -22,8 +22,8 @@ async function syncInstall() {
         connection = await mysql.createConnection(config);
         console.log('Connected to database');
 
-        // First, extract and organize all statements
-        const createStatements = [];
+        // Extract and organize statements
+        const createStatements = new Map(); // Table name -> create statement
         const insertStatements = new Map(); // Table name -> insert statements
 
         // Split and clean SQL statements
@@ -33,11 +33,27 @@ async function syncInstall() {
             .map(stmt => stmt.trim())
             .filter(stmt => stmt.length > 0);
 
-        // Organize statements by type
+        // First pass: collect CREATE TABLE statements and their columns
         for (const stmt of statements) {
             if (stmt.toLowerCase().includes('create table')) {
-                createStatements.push(stmt);
-            } else if (stmt.toLowerCase().includes('insert into')) {
+                const tableName = stmt.match(/create table `?(\w+)`?/i)[1];
+                createStatements.set(tableName, stmt);
+                
+                // Extract column definitions
+                const columnDefs = stmt
+                    .match(/\(([\s\S]*)\)/)[1]
+                    .split(',')
+                    .map(col => col.trim())
+                    .filter(col => col.match(/^`?\w+`?\s+\w+/));
+                
+                const columns = columnDefs.map(col => col.match(/^`?(\w+)`?\s+/)[1]);
+                console.log(`Table ${tableName} columns:`, columns);
+            }
+        }
+
+        // Second pass: collect INSERT statements
+        for (const stmt of statements) {
+            if (stmt.toLowerCase().includes('insert into')) {
                 const tableName = stmt.match(/insert into `?(\w+)`?/i)[1];
                 if (!insertStatements.has(tableName)) {
                     insertStatements.set(tableName, []);
@@ -48,13 +64,7 @@ async function syncInstall() {
 
         // Drop existing tables in reverse order
         console.log('\nDropping existing tables...');
-        const dropTables = [
-            'web_public', 'web_private', 'user', 'testimonial', 'smtp',
-            'plan', 'partners', 'page', 'orders', 'faq', 'embed_chats',
-            'embed_chatbot', 'contact_form', 'chat', 'api_keys', 'ai_voice',
-            'ai_video', 'ai_speech', 'ai_model', 'ai_image', 'admin'
-        ];
-
+        const dropTables = Array.from(createStatements.keys()).reverse();
         for (const table of dropTables) {
             try {
                 await connection.query(`DROP TABLE IF EXISTS ${table}`);
@@ -64,69 +74,75 @@ async function syncInstall() {
             }
         }
 
-        // Create tables in correct order
+        // Create tables in order
         console.log('\nCreating tables...');
-        for (const createStmt of createStatements) {
+        for (const [tableName, createStmt] of createStatements) {
             try {
                 await connection.query(createStmt);
-                const tableName = createStmt.match(/create table `?(\w+)`?/i)[1];
                 console.log(`Created table: ${tableName}`);
             } catch (err) {
-                console.error('Failed to create table:', err.message);
+                console.error(`Failed to create table ${tableName}:`, err.message);
                 throw err;
             }
         }
 
-        // Insert data with proper escaping
+        // Insert data
         console.log('\nInserting data...');
-        
-        // Get all table names from CREATE statements for insertion order
-        const allTables = createStatements.map(stmt => 
-            stmt.match(/create table `?(\w+)`?/i)[1]
-        );
-
-        // Process inserts for all tables found in install.sql
-        for (const tableName of allTables) {
-            const tableInserts = insertStatements.get(tableName) || [];
-            for (const insertStmt of tableInserts) {
+        for (const [tableName, inserts] of insertStatements) {
+            for (const insertStmt of inserts) {
                 try {
-                    // Extract column names if present
+                    // Get column names from the INSERT statement or table definition
                     let columns = [];
                     const columnMatch = insertStmt.match(/INSERT INTO.*?\((.*?)\)\s+VALUES/i);
                     if (columnMatch) {
-                        columns = columnMatch[1].split(',').map(col => col.trim());
+                        columns = columnMatch[1].split(',').map(col => col.trim().replace(/[`'"]/g, ''));
+                    } else {
+                        // Get columns from CREATE TABLE statement
+                        const createStmt = createStatements.get(tableName);
+                        const columnDefs = createStmt
+                            .match(/\(([\s\S]*)\)/)[1]
+                            .split(',')
+                            .map(col => col.trim())
+                            .filter(col => col.match(/^`?\w+`?\s+\w+/));
+                        columns = columnDefs.map(col => col.match(/^`?(\w+)`?\s+/)[1]);
                     }
 
-                    // Handle multi-row inserts
-                    const values = insertStmt
-                        .match(/VALUES\s*(\([\s\S]*\))/i)[1]
-                        .split('),(')
+                    // Extract and process values
+                    const valuesMatch = insertStmt.match(/VALUES\s*(\([\s\S]*\))/i);
+                    if (!valuesMatch) continue;
+
+                    const values = valuesMatch[1]
+                        .split(/\),\s*\(/g)
                         .map(row => row.replace(/^\(|\)$/g, ''));
 
                     for (const row of values) {
-                        // Properly escape string values
-                        const escapedRow = row.split(',').map(val => {
-                            val = val.trim();
+                        const rowValues = row.split(',').map(val => val.trim());
+                        
+                        if (rowValues.length !== columns.length) {
+                            console.error(`Column count mismatch in ${tableName}:`, {
+                                expected: columns.length,
+                                got: rowValues.length,
+                                columns,
+                                values: rowValues
+                            });
+                            continue;
+                        }
+
+                        const processedValues = rowValues.map(val => {
+                            if (val.toLowerCase() === 'null') return null;
+                            if (val === 'CURRENT_TIMESTAMP') return new Date();
                             if (val.startsWith("'") || val.startsWith('"')) {
-                                return val;
-                            } else if (val.toLowerCase() === 'null') {
-                                return 'NULL';
-                            } else if (val === 'CURRENT_TIMESTAMP') {
-                                return 'CURRENT_TIMESTAMP';
-                            } else {
-                                return val;
+                                return val.slice(1, -1).replace(/\\'/g, "'");
                             }
-                        }).join(',');
+                            return val;
+                        });
 
-                        const singleInsertStmt = columns.length > 0 
-                            ? `INSERT INTO ${tableName} (${columns.join(',')}) VALUES (${escapedRow})`
-                            : `INSERT INTO ${tableName} VALUES (${escapedRow})`;
-
-                        await connection.query(singleInsertStmt);
+                        const sql = `INSERT INTO ${tableName} (${columns.join(',')}) VALUES (${columns.map(() => '?').join(',')})`;
+                        await connection.query(sql, processedValues);
                         console.log(`Inserted row into: ${tableName}`);
                     }
                 } catch (err) {
-                    console.error(`Failed to insert into ${tableName}:`, err.message);
+                    console.error(`Error processing ${tableName}:`, err.message);
                     if (process.env.NODE_ENV === 'development') {
                         console.error('Statement:', insertStmt);
                     }
@@ -136,7 +152,7 @@ async function syncInstall() {
 
         // Verify data
         console.log('\nVerifying data...');
-        for (const table of ['admin', 'user', 'plan']) {
+        for (const table of createStatements.keys()) {
             const [rows] = await connection.query(`SELECT COUNT(*) as count FROM ${table}`);
             console.log(`${table} records:`, rows[0].count);
         }
