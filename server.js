@@ -27,13 +27,37 @@ app.use("/api/chat", require("./routes/chat"));
 app.use("/api/embed", require("./routes/embed"));
 app.use("/api/video", require("./routes/video"));
 
-// Health check route
+// Mock data for testing
+const mockData = {
+    user: { id: 1, email: 'test@example.com' },
+    plans: [{ id: 1, name: 'Basic Plan', price: 10 }],
+    chats: [{ id: 1, message: 'Test chat' }]
+};
+
+// Health check route with mock info
 app.get('/api/health', (req, res) => {
     res.json({
         success: true,
         message: 'API is running',
-        environment: process.env.NODE_ENV
+        environment: process.env.NODE_ENV,
+        mockMode: process.env.MOCK_MODE === 'true'
     });
+});
+
+// Mock admin login
+app.post('/api/admin/login', (req, res) => {
+    const { email, password } = req.body;
+    if (email === 'admin@example.com' && password === 'admin123') {
+        res.json({
+            success: true,
+            token: 'mock-token-123'
+        });
+    } else {
+        res.json({
+            success: false,
+            message: 'Invalid credentials'
+        });
+    }
 });
 
 // Error handler

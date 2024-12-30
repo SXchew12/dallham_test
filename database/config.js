@@ -7,18 +7,16 @@ const config = {
         password: process.env.DBPASS || 'localhost',
         database: process.env.DBNAME || 'dallham',
         port: process.env.DBPORT || '3306',
-        ssl: process.env.NODE_ENV === 'production' ? {
-            rejectUnauthorized: true
-        } : undefined
+        ssl: undefined
     },
     production: {
         host: process.env.DBHOST,
         user: process.env.DBUSER,
         password: process.env.DBPASS,
         database: process.env.DBNAME,
-        port: process.env.DBPORT,
+        port: process.env.DBPORT || '3306',
         ssl: {
-            rejectUnauthorized: true
+            rejectUnauthorized: false
         }
     }
 };
@@ -29,21 +27,39 @@ console.log('Database Config:', {
     host: dbConfig.host,
     database: dbConfig.database,
     port: dbConfig.port,
-    ssl: dbConfig.ssl ? 'Enabled' : 'Disabled'
+    ssl: dbConfig.ssl ? 'Enabled' : 'Disabled',
+    environment: process.env.NODE_ENV
 });
 
-const pool = mysql.createPool(dbConfig).promise();
+const isMockMode = process.env.MOCK_MODE === 'true';
 
-// Add test connection function
+const mockPool = {
+    promise: () => ({
+        getConnection: async () => ({
+            release: () => console.log('Mock connection released')
+        }),
+        query: async () => {
+            console.log('Mock query executed');
+            return [[]];  // Return empty result
+        }
+    })
+};
+
+const pool = isMockMode ? mockPool : mysql.createPool(dbConfig).promise();
+
 const testConnection = async () => {
     try {
+        if (isMockMode) {
+            console.log('Running in mock mode - no database connection required');
+            return true;
+        }
         const connection = await pool.getConnection();
         console.log('Database Connected Successfully');
         connection.release();
         return true;
     } catch (error) {
-        console.error('Database Connection Failed:', error);
-        throw error;
+        console.error('Database Connection Failed:', error.message);
+        return false;
     }
 };
 
