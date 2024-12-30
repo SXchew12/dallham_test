@@ -1,3 +1,4 @@
+node_modules
 .env
 .env.local
 .env.development
@@ -5,3 +6,4 @@
 .vercel
 dist
 .next
+package-lock.json

@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { query } = require("../database/dbpromise.js");
 const randomString = require("randomstring");
 const { sign } = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const adminValidator = require("../middlewares/admin.js");
 const validateUser = require("../middlewares/user.js");
 

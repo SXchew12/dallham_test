@@ -14,7 +14,7 @@ const {
 } = require("../functions/function.js");
 const validateUser = require("../middlewares/user.js");
 const { appVersion, addON } = require("../env.js");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 router.get("/update_queries", async (req, res) => {
   try {

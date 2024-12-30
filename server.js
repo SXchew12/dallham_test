@@ -20,16 +20,35 @@ console.log('\x1b[34m%s\x1b[0m', `   DBNAME: ${process.env.DBNAME}`);
 console.log('\x1b[34m%s\x1b[0m', `   NODE_ENV: ${process.env.NODE_ENV}`);
 console.log('\n');
 
+// CORS configuration
+app.use(cors({
+    origin: '*', // Allow all origins in development
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Basic middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? [process.env.FRONTENDURI]
-        : 'http://localhost:3011',
-    credentials: true
-}));
 app.use(fileUpload());
+
+// Health check route
+app.get('/api/health', async (req, res) => {
+    try {
+        await testConnection();
+        res.json({
+            success: true,
+            message: 'API is running',
+            environment: process.env.NODE_ENV,
+            database: 'connected'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 // Routes
 const userRoute = require("./routes/user");

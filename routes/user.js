@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { query } = require("../database/dbpromise.js");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 const {
   isValidEmail,
