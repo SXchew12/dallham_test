@@ -18,6 +18,8 @@
         "DBNAME": "@dbname",
         "DBUSER": "@dbuser",
         "DBPORT": "@dbport",
-        "JWTKEY": "@jwtkey"
+        "JWTKEY": "@jwtkey",
+        "FRONTENDURI": "@frontenduri",
+        "BACKURI": "@backuri"
     }
 } 

@@ -32,7 +32,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 // app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
-        ? ['https://your-frontend-domain.com', 'https://your-admin-domain.com']
+        ? [process.env.FRONTENDURI]
         : 'http://localhost:3011',
     credentials: true
 }));
@@ -100,6 +100,8 @@ app.get('/api/health', async (req, res) => {
 
 if (process.env.NODE_ENV === 'production') {
     console.log('Running in production mode');
+    console.log('Frontend URI:', process.env.FRONTENDURI);
+    console.log('Backend URI:', process.env.BACKURI);
 }
 
 if (process.env.NODE_ENV === 'production') {
