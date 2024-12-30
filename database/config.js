@@ -41,21 +41,62 @@ const mockPool = {
         query: async (sql, params) => {
             console.log('Mock query executed:', sql);
             
-            // Mock admin login query
+            // Mock admin login
             if (sql.includes('SELECT * FROM admin WHERE email = ?')) {
                 const [email] = params;
                 if (email === 'admin@example.com') {
                     return [[{
                         uid: 'admin-123',
                         email: 'admin@example.com',
-                        password: '$2a$10$mockhashedpassword', // Mock hashed password
+                        password: '$2a$10$mockhashedpassword',
                         role: 'admin'
                     }]];
                 }
                 return [[]];
             }
-            
-            return [[]];  // Default empty result
+
+            // Mock users list
+            if (sql === 'SELECT * FROM user') {
+                return [[
+                    { uid: 'user1', email: 'user1@example.com', name: 'User One' },
+                    { uid: 'user2', email: 'user2@example.com', name: 'User Two' }
+                ]];
+            }
+
+            // Mock plans
+            if (sql.includes('SELECT * FROM plan')) {
+                return [[
+                    { id: 1, name: 'Basic Plan', price: 10 },
+                    { id: 2, name: 'Pro Plan', price: 20 }
+                ]];
+            }
+
+            // Mock testimonials
+            if (sql === 'SELECT * FROM testimonial') {
+                return [[
+                    { id: 1, title: 'Great Service', reviewer_name: 'John Doe' },
+                    { id: 2, title: 'Amazing Product', reviewer_name: 'Jane Smith' }
+                ]];
+            }
+
+            // Mock SMTP settings
+            if (sql === 'SELECT * FROM smtp') {
+                return [[{
+                    email: 'smtp@example.com',
+                    host: 'smtp.example.com',
+                    port: '587',
+                    password: 'mockpass'
+                }]];
+            }
+
+            // Handle inserts/updates/deletes
+            if (sql.includes('INSERT INTO') || 
+                sql.includes('UPDATE') || 
+                sql.includes('DELETE')) {
+                return [{ affectedRows: 1 }];
+            }
+
+            return [[]];
         }
     })
 };
