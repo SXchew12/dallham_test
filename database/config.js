@@ -11,9 +11,17 @@ const config = {
     waitForConnections: true,
     queueLimit: 0,
     ssl: process.env.NODE_ENV === 'production' ? {
-        rejectUnauthorized: false
+        rejectUnauthorized: true,
+        ca: process.env.DB_CA_CERT
     } : false
 };
+
+console.log('Database Config:', {
+    host: process.env.DBHOST,
+    database: process.env.DBNAME,
+    port: process.env.DBPORT,
+    ssl: config.ssl ? 'Enabled' : 'Disabled'
+});
 
 const pool = mysql.createPool(config);
 

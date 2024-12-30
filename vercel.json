@@ -5,8 +5,9 @@
             "src": "server.js",
             "use": "@vercel/node",
             "config": {
-                "maxDuration": 30,
-                "memory": 1024
+                "maxDuration": 60,
+                "memory": 3008,
+                "nodeVersion": "18.x"
             }
         }
     ],
@@ -19,5 +20,18 @@
             "src": "/(.*)",
             "dest": "server.js"
         }
-    ]
+    ],
+    "env": {
+        "NODE_ENV": "production",
+        "HOST": "0.0.0.0",
+        "PORT": "3011",
+        "DBHOST": "@dbhost",
+        "DBNAME": "@dbname",
+        "DBUSER": "@dbuser",
+        "DBPASS": "@dbpass",
+        "DBPORT": "@dbport",
+        "JWTKEY": "@jwtkey",
+        "FRONTENDURI": "@frontenduri",
+        "BACKURI": "@backuri"
+    }
 } 
