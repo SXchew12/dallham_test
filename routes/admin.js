@@ -19,6 +19,8 @@ const mockComparePassword = (password) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt:', { email });
+
     if (!email || !password) {
       return res.json({
         success: false,
@@ -26,62 +28,54 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    const isMockMode = process.env.MOCK_MODE === 'true';
-    
-    if (isMockMode) {
-      // Mock login logic
-      if (email === 'admin@example.com' && mockComparePassword(password)) {
-        const token = sign(
-          {
-            uid: 'admin-123',
-            role: 'admin',
-            email: email,
-            password: '$2a$10$mockhashedpassword'
-          },
-          process.env.JWTKEY,
-          { expiresIn: '24h' }
-        );
-        return res.json({
-          success: true,
-          token
-        });
-      }
-      return res.json({ 
-        success: false, 
-        msg: "Invalid credentials" 
-      });
-    }
-
-    // Real login logic continues...
     const userFind = await query(`SELECT * FROM admin WHERE email = ?`, [email]);
+    console.log('User found:', {
+        exists: userFind.length > 0,
+        role: userFind[0]?.role,
+        uid: userFind[0]?.uid,
+        passwordHash: userFind[0]?.password?.substring(0, 20) + '...'
+    });
+
     if (userFind.length < 1) {
-      return res.json({ msg: "Invalid credentials found" });
+      return res.json({ success: false, msg: "Invalid credentials" });
     }
 
-    const compare = await bcrypt.compare(password, userFind[0].password);
-    if (!compare) {
-      return res.json({ msg: "Invalid credentials" });
-    } else {
-      const token = sign(
-        {
-          uid: userFind[0].uid,
-          role: "admin",
-          password: userFind[0].password,
-          email: userFind[0].email,
-        },
-        process.env.JWTKEY,
-        {
-          expiresIn: '24h'
-        }
-      );
-      res.json({
-        success: true,
-        token,
-      });
+    // Try both direct comparison and bcrypt
+    let compare = false;
+    
+    // First try bcrypt
+    try {
+        compare = await bcrypt.compare(password, userFind[0].password);
+    } catch (e) {
+        console.log('Bcrypt compare failed, trying direct comparison');
+        // If bcrypt fails, try direct comparison (for non-hashed passwords)
+        compare = (password === userFind[0].password);
     }
+
+    console.log('Password match:', compare);
+
+    if (!compare) {
+      return res.json({ success: false, msg: "Invalid credentials" });
+    }
+
+    const token = sign(
+      {
+        uid: userFind[0].uid,
+        role: "admin",
+        password: userFind[0].password,
+        email: userFind[0].email,
+      },
+      process.env.JWTKEY,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      success: true,
+      token,
+    });
   } catch (err) {
-    console.error('Admin login error:', err);
-    res.json({ success: false, msg: "something went wrong" });
+    console.error('Login error:', err);
+    res.json({ success: false, msg: "server error", error: err.message });
   }
 });
 
