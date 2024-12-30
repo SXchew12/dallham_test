@@ -19,16 +19,5 @@
             "src": "/(.*)",
             "dest": "server.js"
         }
-    ],
-    "env": {
-        "NODE_ENV": "production",
-        "DBHOST": "@dbhost",
-        "DBNAME": "@dbname",
-        "DBUSER": "@dbuser",
-        "DBPASS": "@dbpass",
-        "DBPORT": "@dbport",
-        "JWTKEY": "@jwtkey",
-        "FRONTENDURI": "@frontenduri",
-        "BACKURI": "@backuri"
-    }
+    ]
 } 
