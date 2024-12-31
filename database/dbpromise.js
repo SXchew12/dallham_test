@@ -1,31 +1,14 @@
 const mysql = require('mysql2/promise');
+const { config } = require('./config');
 
-const createPool = () => {
-    return mysql.createPool({
-        host: process.env.MYSQLHOST,
-        user: process.env.MYSQLUSER,
-        password: process.env.MYSQLPASSWORD,
-        database: process.env.MYSQLDATABASE,
-        port: parseInt(process.env.MYSQLPORT),
-        ssl: {
-            rejectUnauthorized: false
-        },
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0
-    });
-};
-
-const pool = createPool();
-
-const query = async (sql, params) => {
+async function query(sql, params) {
+    const connection = await mysql.createConnection(config);
     try {
-        const [results] = await pool.execute(sql, params);
+        const [results] = await connection.execute(sql, params);
         return results;
-    } catch (error) {
-        console.error('Database query error:', error);
-        throw error;
+    } finally {
+        await connection.end();
     }
-};
+}
 
-module.exports = { query, pool };   
+module.exports = { query };   

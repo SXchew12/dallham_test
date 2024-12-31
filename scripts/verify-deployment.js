@@ -1,54 +1,74 @@
 require('dotenv').config();
-const mysql = require('mysql2/promise');
+const fetch = require('node-fetch');
 
 async function verifyDeployment() {
-    const config = {
-        host: process.env.MYSQLHOST,
-        user: process.env.MYSQLUSER,
-        password: process.env.MYSQLPASSWORD,
-        database: process.env.MYSQLDATABASE,
-        port: parseInt(process.env.MYSQLPORT),
-        ssl: {
-            rejectUnauthorized: false
+    const environments = [
+        { name: 'Local', url: 'http://localhost:3011' },
+        { name: 'Production', url: `https://${process.env.VERCEL_URL || 'dallham-test5.vercel.app'}` }
+    ];
+
+    for (const env of environments) {
+        console.log(`\nTesting ${env.name} Environment: ${env.url}`);
+        try {
+            // 1. Test basic API connection
+            console.log('\n1. Testing API connection...');
+            const testRes = await fetch(`${env.url}/api/test`);
+            if (!testRes.ok) throw new Error(`API test failed with status ${testRes.status}`);
+            console.log('✅ API connection successful');
+
+            // 2. Test admin login
+            console.log('\n2. Testing admin login...');
+            const loginRes = await fetch(`${env.url}/api/admin/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: 'admin@admin.com',
+                    password: 'password'
+                })
+            });
+
+            const loginData = await loginRes.json();
+            if (!loginData.success) throw new Error('Login failed');
+            console.log('✅ Admin login successful');
+
+            // 3. Test data endpoints
+            console.log('\n3. Testing data endpoints...');
+            const endpoints = [
+                '/api/admin/get_users',
+                '/api/admin/get_plans',
+                '/api/admin/verify-db'
+            ];
+
+            for (const endpoint of endpoints) {
+                const response = await fetch(`${env.url}${endpoint}`, {
+                    headers: { 
+                        'Authorization': `Bearer ${loginData.token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(`${endpoint} failed`);
+                console.log(`✅ ${endpoint} successful`);
+                
+                // Log record counts
+                if (endpoint.includes('users')) {
+                    console.log(`   Users found: ${data.users?.length || 0}`);
+                }
+                if (endpoint.includes('plans')) {
+                    console.log(`   Plans found: ${data.plans?.length || 0}`);
+                }
+            }
+
+        } catch (error) {
+            console.error(`❌ ${env.name} verification failed:`, error.message);
         }
-    };
-
-    try {
-        console.log('Verifying deployment configuration...');
-        console.log('Environment:', process.env.NODE_ENV);
-        console.log('Database config:', {
-            host: config.host,
-            user: config.user,
-            database: config.database,
-            port: config.port
-        });
-
-        const connection = await mysql.createConnection(config);
-        console.log('Database connection successful');
-
-        const [tables] = await connection.query('SHOW TABLES');
-        console.log('\nVerifying tables:');
-        const tableNames = tables.map(t => Object.values(t)[0]);
-        console.log(tableNames);
-
-        // Verify essential tables
-        const essentialTables = [
-            'admin', 'user', 'plan', 'api_keys',
-            'ai_image', 'ai_speech', 'ai_voice', 'ai_video',
-            'web_private', 'web_public'
-        ];
-
-        const missingTables = essentialTables.filter(t => !tableNames.includes(t));
-        if (missingTables.length > 0) {
-            console.error('\nMissing tables:', missingTables);
-        } else {
-            console.log('\nAll essential tables present ✅');
-        }
-
-        await connection.end();
-    } catch (error) {
-        console.error('Deployment verification failed:', error);
     }
 }
 
-verifyDeployment(); 
+verifyDeployment().then(() => {
+    console.log('\nVerification complete');
+}).catch(err => {
+    console.error('Verification failed:', err);
+    process.exit(1);
+}); 

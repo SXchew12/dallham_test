@@ -41,6 +41,14 @@ app.use("/api/plan", require("./routes/plan"));
 app.use("/api/chat", require("./routes/chat"));
 app.use("/api/embed", require("./routes/embed"));
 app.use("/api/video", require("./routes/video"));
+app.use("/api/test", (req, res) => {
+    res.json({
+        success: true,
+        message: 'API is working',
+        environment: process.env.NODE_ENV,
+        timestamp: new Date().toISOString()
+    });
+});
 
 // Mock data for testing
 const mockData = {
