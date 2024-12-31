@@ -5,7 +5,6 @@ const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const path = require("path");
 const { testConnection } = require('./database/config');
-const { syncInstall } = require('./scripts/sync-install');
 
 // Log environment for debugging
 console.log('Environment:', {
@@ -41,14 +40,6 @@ app.use("/api/plan", require("./routes/plan"));
 app.use("/api/chat", require("./routes/chat"));
 app.use("/api/embed", require("./routes/embed"));
 app.use("/api/video", require("./routes/video"));
-app.use("/api/test", (req, res) => {
-    res.json({
-        success: true,
-        message: 'API is working',
-        environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-    });
-});
 
 // Mock data for testing
 const mockData = {
@@ -89,50 +80,21 @@ app.post('/api/admin/login', (req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-    console.error('API Error:', err);
+    console.error(err);
     res.status(500).json({
         success: false,
-        message: process.env.NODE_ENV === 'production' 
-            ? 'Internal server error' 
-            : err.message
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
 });
 
-// Initialize database on startup only in production
-async function initializeApp() {
-    try {
-        // Test database connection first
-        const connected = await testConnection();
-        if (!connected) {
-            throw new Error('Database connection failed');
-        }
-
-        // Only sync in production on cold starts
-        if (process.env.NODE_ENV === 'production') {
-            console.log('Production environment detected, initializing database...');
-            await syncInstall();
-        }
-
-        return true;
-    } catch (error) {
-        console.error('Initialization failed:', error);
-        return false;
-    }
-}
-
-// Modified server startup
-if (process.env.NODE_ENV === 'production') {
-    // For Vercel deployment
-    initializeApp();
-    module.exports = app;
-} else {
-    // For local development
+// Start server for local development
+if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3011;
-    initializeApp().then(success => {
-        if (success) {
-            app.listen(PORT, () => {
-                console.log(`Server running on port ${PORT}`);
-            });
-        }
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
     });
 }
+
+// Export for Vercel
+module.exports = app;
