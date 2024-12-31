@@ -8,7 +8,8 @@
                 "includeFiles": [
                     "srt/**/*",
                     "chats/**/*",
-                    "public/**/*"
+                    "public/**/*",
+                    "sql/**/*"
                 ]
             }
         }

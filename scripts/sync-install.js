@@ -161,7 +161,7 @@ async function syncInstall() {
 
     } catch (error) {
         console.error('Sync failed:', error);
-        process.exit(1);
+        throw error;
     } finally {
         if (connection) {
             await connection.end();
@@ -169,10 +169,14 @@ async function syncInstall() {
     }
 }
 
-syncInstall().then(() => {
-    console.log('All done!');
-    process.exit(0);
-}).catch(err => {
-    console.error('Failed:', err);
-    process.exit(1);
-}); 
+if (require.main === module) {
+    syncInstall().then(() => {
+        console.log('All done!');
+        process.exit(0);
+    }).catch(err => {
+        console.error('Failed:', err);
+        process.exit(1);
+    });
+}
+
+module.exports = { syncInstall }; 

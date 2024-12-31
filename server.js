@@ -5,6 +5,7 @@ const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const path = require("path");
 const { testConnection } = require('./database/config');
+const { syncInstall } = require('./scripts/sync-install');
 
 // Log environment for debugging
 console.log('Environment:', {
@@ -88,12 +89,27 @@ app.use((err, req, res, next) => {
     });
 });
 
+async function initializeDatabase() {
+    try {
+        console.log('Initializing database...');
+        await syncInstall();
+        console.log('Database initialization complete');
+    } catch (error) {
+        console.error('Database initialization failed:', error);
+        // Don't exit process, just log the error
+    }
+}
+
 // Start server for local development
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3011;
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
+    if (require.main === module) {
+        initializeDatabase().then(() => {
+            app.listen(PORT, () => {
+                console.log(`Server running on port ${PORT}`);
+            });
+        });
+    }
 }
 
 // Export for Vercel
