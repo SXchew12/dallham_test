@@ -6,10 +6,10 @@
             "use": "@vercel/node",
             "config": {
                 "includeFiles": [
-                    "srt/**/*",
-                    "chats/**/*",
+                    "sql/**/*",
                     "public/**/*",
-                    "sql/**/*"
+                    "srt/**/*",
+                    "chats/**/*"
                 ]
             }
         }
@@ -22,7 +22,7 @@
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization"
             },
-            "dest": "server.js",
+            "dest": "/api/$1",
             "continue": true
         },
         {
@@ -30,12 +30,6 @@
             "dest": "server.js"
         }
     ],
-    "functions": {
-        "api/**/*.js": {
-            "memory": 1024,
-            "maxDuration": 10
-        }
-    },
     "env": {
         "NODE_ENV": "production"
     }

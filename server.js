@@ -89,28 +89,41 @@ app.use((err, req, res, next) => {
     });
 });
 
-async function initializeDatabase() {
+// Initialize database on startup only in production
+async function initializeApp() {
     try {
-        console.log('Initializing database...');
-        await syncInstall();
-        console.log('Database initialization complete');
+        // Test database connection first
+        const connected = await testConnection();
+        if (!connected) {
+            throw new Error('Database connection failed');
+        }
+
+        // Only sync in production on cold starts
+        if (process.env.NODE_ENV === 'production') {
+            console.log('Production environment detected, initializing database...');
+            await syncInstall();
+        }
+
+        return true;
     } catch (error) {
-        console.error('Database initialization failed:', error);
-        // Don't exit process, just log the error
+        console.error('Initialization failed:', error);
+        return false;
     }
 }
 
-// Start server for local development
-if (process.env.NODE_ENV !== 'production') {
+// Modified server startup
+if (process.env.NODE_ENV === 'production') {
+    // For Vercel deployment
+    initializeApp();
+    module.exports = app;
+} else {
+    // For local development
     const PORT = process.env.PORT || 3011;
-    if (require.main === module) {
-        initializeDatabase().then(() => {
+    initializeApp().then(success => {
+        if (success) {
             app.listen(PORT, () => {
                 console.log(`Server running on port ${PORT}`);
             });
-        });
-    }
+        }
+    });
 }
-
-// Export for Vercel
-module.exports = app;
