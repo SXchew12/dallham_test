@@ -40,23 +40,43 @@ async function verifyDeployment() {
             ];
 
             for (const endpoint of endpoints) {
-                const response = await fetch(`${env.url}${endpoint}`, {
-                    headers: { 
-                        'Authorization': `Bearer ${loginData.token}`,
-                        'Accept': 'application/json'
-                    }
-                });
+                try {
+                    console.log(`\nTesting ${endpoint}...`);
+                    const response = await fetch(`${env.url}${endpoint}`, {
+                        headers: { 
+                            'Authorization': `Bearer ${loginData.token}`,
+                            'Accept': 'application/json'
+                        }
+                    });
 
-                const data = await response.json();
-                if (!data.success) throw new Error(`${endpoint} failed`);
-                console.log(`✅ ${endpoint} successful`);
-                
-                // Log record counts
-                if (endpoint.includes('users')) {
-                    console.log(`   Users found: ${data.users?.length || 0}`);
-                }
-                if (endpoint.includes('plans')) {
-                    console.log(`   Plans found: ${data.plans?.length || 0}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const text = await response.text();
+                    let data;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (e) {
+                        console.error('Invalid JSON response:', text);
+                        throw new Error('Invalid JSON response');
+                    }
+
+                    if (!data.success) {
+                        throw new Error(data.message || 'API request failed');
+                    }
+
+                    console.log(`✅ ${endpoint} successful`);
+                    
+                    // Log specific data counts
+                    if (endpoint.includes('users')) {
+                        console.log(`   Users found: ${data.users?.length || 0}`);
+                    }
+                    if (endpoint.includes('plans')) {
+                        console.log(`   Plans found: ${data.plans?.length || 0}`);
+                    }
+                } catch (error) {
+                    console.error(`❌ ${endpoint} failed:`, error.message);
                 }
             }
 

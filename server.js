@@ -89,11 +89,12 @@ app.post('/api/admin/login', (req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-    console.error(err);
+    console.error('API Error:', err);
     res.status(500).json({
         success: false,
-        message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        message: process.env.NODE_ENV === 'production' 
+            ? 'Internal server error' 
+            : err.message
     });
 });
 

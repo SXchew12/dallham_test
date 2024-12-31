@@ -12,28 +12,30 @@ async function syncInstallData() {
             password: process.env.MYSQLPASSWORD,
             database: process.env.MYSQLDATABASE,
             port: parseInt(process.env.MYSQLPORT),
-            ssl: { rejectUnauthorized: false }
+            ssl: { rejectUnauthorized: false },
+            multipleStatements: true
         };
 
         connection = await mysql.createConnection(config);
         console.log('Connected to database');
 
-        // 1. Insert Admin (if not exists)
+        // First, execute install.sql as is
+        console.log('\nExecuting install.sql...');
+        const installSql = await fs.readFile(path.join(__dirname, '../sql/install.sql'), 'utf8');
+        await connection.query(installSql);
+        console.log('Database structure created successfully');
+
+        // Now sync the essential data without modifying schema
         console.log('\nSyncing admin...');
         await connection.query(`
             INSERT IGNORE INTO admin (role, uid, email, password) 
-            VALUES (
-                'admin', 
-                'lnAnUIUnBBtXhcj5VHdaA2KERBgCTkWz',
-                'admin@admin.com',
-                '$2b$10$NpdbfaW2xj9dEJpiz9fyUuYbsY7JV9H7sTifhdPqTeUuVhWe2fex6'
-            )
+            SELECT 'admin', 'lnAnUIUnBBtXhcj5VHdaA2KERBgCTkWz', 'admin@admin.com',
+                   '$2b$10$NpdbfaW2xj9dEJpiz9fyUuYbsY7JV9H7sTifhdPqTeUuVhWe2fex6'
+            WHERE NOT EXISTS (SELECT 1 FROM admin WHERE email = 'admin@admin.com')
         `);
 
-        // 2. Insert Test User (if not exists)
         console.log('\nSyncing test user...');
         const testUserPlan = {
-            id: 1,
             name: "Full Access",
             price: "0",
             in_app_chat: 1,
@@ -48,34 +50,36 @@ async function syncInstallData() {
         };
 
         await connection.query(`
-            INSERT IGNORE INTO user (
-                role, uid, name, email, password, mobile, timezone,
-                plan, plan_expire, trial, gemini_token, openai_token
-            ) VALUES (
-                'user', 'testuser123', 'Test User', 'test@test.com',
-                '$2b$10$NpdbfaW2xj9dEJpiz9fyUuYbsY7JV9H7sTifhdPqTeUuVhWe2fex6',
-                '1234567890', 'UTC', ?, '1735689600000', 0, '999999', '999999'
-            )
+            INSERT IGNORE INTO user (role, uid, name, email, password, mobile, timezone,
+                plan, plan_expire, trial, gemini_token, openai_token)
+            SELECT 'user', 'testuser123', 'Test User', 'test@test.com',
+                   '$2b$10$NpdbfaW2xj9dEJpiz9fyUuYbsY7JV9H7sTifhdPqTeUuVhWe2fex6',
+                   '1234567890', 'UTC', ?, '1735689600000', 0, '999999', '999999'
+            WHERE NOT EXISTS (SELECT 1 FROM user WHERE email = 'test@test.com')
         `, [JSON.stringify(testUserPlan)]);
 
-        // 3. Insert Test Plan (if not exists)
-        console.log('\nSyncing test plan...');
+        console.log('\nSyncing plans...');
         await connection.query(`
-            INSERT IGNORE INTO plan (
-                name, price, in_app_chat, image_maker, code_writer,
+            INSERT IGNORE INTO plan (name, price, in_app_chat, image_maker, code_writer,
                 speech_to_text, voice_maker, ai_video, validity_days,
-                gemini_token, openai_token
-            ) VALUES (
-                'Test Plan', '0', 1, 1, 1, 1, 1, 1, '365',
-                '999999', '999999'
-            )
+                gemini_token, openai_token)
+            SELECT 'Free Plan', '0', 1, 1, 1, 1, 1, 1, '365', '999999', '999999'
+            WHERE NOT EXISTS (SELECT 1 FROM plan WHERE name = 'Free Plan')
         `);
 
-        // 4. Insert API Keys (if not exists)
+        await connection.query(`
+            INSERT IGNORE INTO plan (name, price, in_app_chat, image_maker, code_writer,
+                speech_to_text, voice_maker, ai_video, validity_days,
+                gemini_token, openai_token)
+            SELECT 'Pro Plan', '19.99', 1, 1, 1, 1, 1, 1, '30', '999999', '999999'
+            WHERE NOT EXISTS (SELECT 1 FROM plan WHERE name = 'Pro Plan')
+        `);
+
         console.log('\nSyncing API keys...');
         await connection.query(`
             INSERT IGNORE INTO api_keys (open_ai, gemini_ai, stable_diffusion)
-            VALUES (?, ?, ?)
+            SELECT ?, ?, ?
+            WHERE NOT EXISTS (SELECT 1 FROM api_keys LIMIT 1)
         `, [
             'sk-proj-KA3vYIRjJ1gJ81DB4L2uT3BlbkFJtDiMXXXXXXXXXXX',
             'AIzaSyA27vzeSnobuj1a67XJd_MXXXXXXXXXXX',

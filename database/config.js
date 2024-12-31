@@ -6,7 +6,8 @@ const config = {
     password: process.env.MYSQLPASSWORD,
     database: process.env.MYSQLDATABASE,
     port: parseInt(process.env.MYSQLPORT),
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
+    multipleStatements: true
 };
 
 async function testConnection() {
