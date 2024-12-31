@@ -21,20 +21,13 @@
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization"
             },
-            "dest": "server.js",
-            "continue": true
+            "dest": "server.js"
         },
         {
             "src": "/(.*)",
             "dest": "server.js"
         }
     ],
-    "functions": {
-        "api/**/*.js": {
-            "memory": 1024,
-            "maxDuration": 10
-        }
-    },
     "env": {
         "NODE_ENV": "production"
     }
