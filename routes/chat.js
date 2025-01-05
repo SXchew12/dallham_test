@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const prisma = require("../database/prisma");
 const { query } = require("../database/dbpromise.js");
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
@@ -26,23 +27,29 @@ router.post(
       const filePath = `${__dirname}/../chats/inapp/${req.decode.uid}/${chatId}.json`;
       ensureFileWithEmptyArray(filePath);
 
-      await query(
-        `INSERT INTO chat (uid, chat_id, title, model_id) VALUES (?,?,?,?)`,
-        [req.decode.uid, chatId, modelId, modelId]
-      );
+      await prisma.chat.create({
+        data: {
+          uid: req.decode.uid,
+          chat_id: chatId,
+          title: modelId,
+          model_id: modelId,
+        }
+      });
 
-      const getChat = await query(
-        `SELECT * FROM chat WHERE chat_id = ? AND uid = ?`,
-        [chatId, req.decode?.uid]
-      );
+      const getChat = await prisma.chat.findFirst({
+        where: {
+          chat_id: chatId,
+          uid: req.decode?.uid,
+        }
+      });
 
       res.json({
         success: true,
-        chat: getChat[0],
+        chat: getChat,
       });
     } catch (err) {
-      console.log(err);
-      res.json({ err, success: false, msg: "Something went wrong" });
+      console.error(err);
+      res.status(500).json({ success: false, msg: "Something went wrong" });
     }
   }
 );
@@ -55,16 +62,18 @@ router.get(
   checkInAppChat,
   async (req, res) => {
     try {
-      const data = await query(`SELECT * FROM chat WHERE uid = ?`, [
-        req.decode.uid,
-      ]);
+      const data = await prisma.chat.findMany({
+        where: {
+          uid: req.decode.uid,
+        }
+      });
       res.json({
         data,
         success: true,
       });
     } catch (err) {
-      console.log(err);
-      res.json({ err, success: false, msg: "Something went wrong" });
+      console.error(err);
+      res.status(500).json({ success: false, msg: "Something went wrong" });
     }
   }
 );
@@ -87,10 +96,11 @@ router.post(
       const filePath = `${__dirname}/../chats/inapp/${req.decode.uid}/${chatId}.json`;
       const msgs = readJsonFile(filePath, msgNum || 50);
 
-      const getModel = await query(
-        `SELECT * FROM ai_model WHERE model_id = ?`,
-        [modelId]
-      );
+      const getModel = await prisma.ai_model.findFirst({
+        where: {
+          model_id: modelId,
+        }
+      });
 
       if (getModel.checkPlan < 1) {
         return res.json({
@@ -101,12 +111,12 @@ router.post(
 
       res.json({
         data: msgs,
-        model: getModel[0],
+        model: getModel,
         success: true,
       });
     } catch (err) {
-      console.log(err);
-      res.json({ err, success: false, msg: "Something went wrong" });
+      console.error(err);
+      res.status(500).json({ success: false, msg: "Something went wrong" });
     }
   }
 );
@@ -120,14 +130,18 @@ router.post("/del_one_chat", validateUser, checkPlan, async (req, res) => {
       return res.json({ msg: "ChatId missing" });
     }
 
-    await query(`DELETE FROM chat WHERE chat_id = ?`, [chatId]);
+    await prisma.chat.delete({
+      where: {
+        chat_id: chatId,
+      }
+    });
     const filePath = `${__dirname}/../chats/inapp/${req.decode.uid}/${chatId}.json`;
     deleteFileIfExists(filePath);
 
     res.json({ success: true, msg: "Chat was deleted" });
   } catch (err) {
-    console.log(err);
-    res.json({ err, success: false, msg: "Something went wrong" });
+    console.error(err);
+    res.status(500).json({ success: false, msg: "Something went wrong" });
   }
 });
 
@@ -201,8 +215,8 @@ router.post(
         data: newMsgArr,
       });
     } catch (err) {
-      console.log(err);
-      res.json({ err, success: false, msg: "Something went wrong" });
+      console.error(err);
+      res.status(500).json({ success: false, msg: "Something went wrong" });
     }
   }
 );
