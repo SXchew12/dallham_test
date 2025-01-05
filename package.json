@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "vercel-build": "mkdir -p chats/inapp chats/embed public/media srt/src && echo '{}' > srt/src/ass.json",
+    "vercel-build": "bash ./build.sh",
     "db:import": "ts-node scripts/import-from-sql.ts",
     "db:verify": "node scripts/verify-db.js",
     "db:reset": "npx prisma db push --force-reset && node scripts/migrate-to-postgres.js",
@@ -29,9 +29,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "18": "^0.0.0",
     "@google/generative-ai": "^0.15.0",
-    "@prisma/client": "^6.1.0",
+    "@prisma/client": "^5.8.0",
     "async-g-i-s": "^1.5.4",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -51,7 +50,6 @@
     "mustache": "^4.2.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
-    "node": "^23.5.0",
     "node-fetch": "^2.6.9",
     "nodemailer": "^6.9.12",
     "openai": "^4.52.7",
@@ -69,7 +67,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
-    "prisma": "^6.1.0",
+    "prisma": "^5.8.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   }
