@@ -1,34 +1,14 @@
 {
-    "version": 2,
+    "buildCommand": "npm run build",
+    "installCommand": "npm install",
+    "framework": "node",
     "builds": [
         {
-            "src": "server.js",
-            "use": "@vercel/node",
-            "config": {
-                "includeFiles": [
-                    "srt/**/*",
-                    "chats/**/*",
-                    "public/**/*"
-                ]
-            }
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization"
-            },
-            "dest": "server.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "server.js"
+            "src": "index.js",
+            "use": "@vercel/node"
         }
     ],
     "env": {
-        "NODE_ENV": "production"
+        "DATABASE_URL": "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiYTE1MTZjNWUtZWIxMi00Y2QxLWFiZmItODYxMzc3ZDY1Njc0IiwidGVuYW50X2lkIjoiYzAyZWM0NzZlZDJjZjIzMmJhYWM2YTI0YmE1YTU5MzgxOWUyODhhZGMxODlmNjAyOGJiZDYxZWQzOGYyMzI4MSIsImludGVybmFsX3NlY3JldCI6IjI0ZTQxMGRhLTE4OTgtNDFkOC04ZDI4LTQ4MGU4YWU1ZWY3OCJ9.8xUDtrtUeJ1BXkV8V3Z0HsmRAIMfPbcg1raSf5E-urU"
     }
 } 

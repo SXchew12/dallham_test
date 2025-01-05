@@ -199,6 +199,38 @@ async function setupRailwayDB() {
             VALUES ('sk-proj-KA3vYIRjJ1gJ81DB4L2uT3BlbkFJtDiMXXXXXXXXXXX', 'AIzaSyA27vzeSnobuj1a67XJd_MXXXXXXXXXXX', 'sk-f9WeKwC7YuZAgS0wzTLDk4kO84fpRNDa8OMXXXXXXXXXXX')
         `);
 
+        // Test User
+        await connection.query(`
+            INSERT INTO user (role, uid, name, email, password, mobile, timezone, plan, plan_expire, trial, gemini_token, openai_token) 
+            VALUES (
+                'user', 
+                'testuser123', 
+                'Test User', 
+                'test@test.com', 
+                '$2b$10$NpdbfaW2xj9dEJpiz9fyUuYbsY7JV9H7sTifhdPqTeUuVhWe2fex6', 
+                '1234567890', 
+                'UTC',
+                '{"id":1,"name":"Full Access","price":"0","in_app_chat":1,"image_maker":1,"code_writer":1,"speech_to_text":1,"voice_maker":1,"ai_video":1,"validity_days":"365","gemini_token":"999999","openai_token":"999999"}',
+                '1735689600000',
+                0,
+                '999999',
+                '999999'
+            )
+        `);
+
+        // Default Plan
+        await connection.query(`
+            INSERT INTO plan (name, price, in_app_chat, image_maker, code_writer, speech_to_text, voice_maker, ai_video, validity_days, gemini_token, openai_token)
+            VALUES (
+                'Test Plan',
+                '0',
+                1, 1, 1, 1, 1, 1,
+                '365',
+                '999999',
+                '999999'
+            )
+        `);
+
         // Verify setup
         console.log('\n✅ Verifying setup...');
         const [allTables] = await connection.query('SHOW TABLES');

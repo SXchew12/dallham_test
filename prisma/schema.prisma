@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Admin Model
+model Admin {
+  id        Int      @id @default(autoincrement())
+  role      String   @default("admin")
+  uid       String?
+  email     String?
+  password  String?
+  createdAt DateTime @default(now())
+
+  @@map("admin")
+}
+
+// User Model
+model User {
+  id           Int      @id @default(autoincrement())
+  role         String   @default("user")
+  uid          String?
+  name         String?
+  email        String?
+  password     String?
+  mobile       String?
+  timezone     String   @default("Asia/Kolkata")
+  plan         String?  @db.Text
+  plan_expire  String?
+  trial        Int      @default(0)
+  api_key      String?
+  gemini_token String   @default("0")
+  openai_token String   @default("0")
+  createdAt    DateTime @default(now())
+
+  @@map("user")
+}
+
+// Plan Model
+model Plan {
+  id             Int      @id @default(autoincrement())
+  name           String?
+  price          String?
+  in_app_chat    Int      @default(0)
+  image_maker    Int      @default(0)
+  code_writer    Int      @default(0)
+  speech_to_text Int      @default(0)
+  voice_maker    Int      @default(0)
+  ai_video       Int      @default(0)
+  validity_days  String   @default("0")
+  gemini_token   String   @default("0")
+  openai_token   String   @default("0")
+  createdAt      DateTime @default(now())
+
+  @@map("plan")
+}
+
+// API Keys Model
+model ApiKeys {
+  id               Int      @id @default(autoincrement())
+  open_ai          String?
+  gemini_ai        String?
+  stable_diffusion String?
+  createdAt        DateTime @default(now())
+
+  @@map("api_keys")
+}
+
+// AI Models
+model AiImage {
+  id          Int      @id @default(autoincrement())
+  uid         String?
+  ai_type     String?
+  image_size  String?
+  image_style String?
+  prompt      String?
+  filename    String?
+  createdAt   DateTime @default(now())
+
+  @@map("ai_image")
+}
+
+model AiSpeech {
+  id        Int      @id @default(autoincrement())
+  uid       String?
+  type      String?
+  filename  String?
+  output    String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("ai_speech")
+}
+
+model AiVoice {
+  id        Int      @id @default(autoincrement())
+  uid       String?
+  prompt    String?  @db.Text
+  voice     String?
+  filename  String?
+  createdAt DateTime @default(now())
+
+  @@map("ai_voice")
+}
+
+model AiVideo {
+  id          Int      @id @default(autoincrement())
+  uid         String?
+  audio       String?
+  video       String?
+  caption     String?  @db.Text
+  final_video String?
+  status      String?
+  state       String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@map("ai_video")
+}
+
+// Web Configuration Models
+model WebPrivate {
+  id               Int      @id @default(autoincrement())
+  pay_offline_id   String?
+  pay_offline_key  String?
+  offline_active   String?
+  pay_stripe_id    String?
+  pay_stripe_key   String?
+  stripe_active    String?
+  pay_paystack_id  String?
+  pay_paystack_key String?
+  paystack_active  String?
+  createdAt        DateTime @default(now())
+
+  @@map("web_private")
+}
+
+model WebPublic {
+  id                 Int      @id @default(autoincrement())
+  currency_code      String?
+  logo              String?
+  app_name          String?
+  custom_home       String?
+  is_custom_home    Int      @default(0)
+  meta_description  String?  @db.Text
+  currency_symbol   String?
+  home_page_tutorial String?
+  login_header_footer Int     @default(0)
+  exchange_rate     String?
+  createdAt         DateTime @default(now())
+
+  @@map("web_public")
+}
