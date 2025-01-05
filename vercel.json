@@ -2,19 +2,20 @@
     "version": 2,
     "builds": [
         {
-            "src": "index.js",
+            "src": "server.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "index.js"
+            "dest": "server.js"
         }
     ],
     "env": {
         "DATABASE_URL": "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMTIyMWY1YTUtMjQ1Yy00YmU1LTgxY2QtODYzYTg1ZDhhYWQ4IiwidGVuYW50X2lkIjoiYzAyZWM0NzZlZDJjZjIzMmJhYWM2YTI0YmE1YTU5MzgxOWUyODhhZGMxODlmNjAyOGJiZDYxZWQzOGYyMzI4MSIsImludGVybmFsX3NlY3JldCI6IjI0ZTQxMGRhLTE4OTgtNDFkOC04ZDI4LTQ4MGU4YWU1ZWY3OCJ9.Z_af2F3Ti9iubGpQw2RiVYePGT02FnM1l0rLgwgg1Ek",
         "PULSE_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMTIyMWY1YTUtMjQ1Yy00YmU1LTgxY2QtODYzYTg1ZDhhYWQ4IiwidGVuYW50X2lkIjoiYzAyZWM0NzZlZDJjZjIzMmJhYWM2YTI0YmE1YTU5MzgxOWUyODhhZGMxODlmNjAyOGJiZDYxZWQzOGYyMzI4MSIsImludGVybmFsX3NlY3JldCI6IjI0ZTQxMGRhLTE4OTgtNDFkOC04ZDI4LTQ4MGU4YWU1ZWY3OCJ9.Z_af2F3Ti9iubGpQw2RiVYePGT02FnM1l0rLgwgg1Ek",
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "JWTKEY": "NCRUp5hKovUAcZd9OwIw0BCKmjZj9JxpNCRUp5hKovUAcZd9OwIw0BCKmjZj9JxpNCRUp5hKovUAcZd9OwIw0BCKmjZj9Jxp"
     }
 } 

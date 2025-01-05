@@ -11,6 +11,17 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
+// Root route - Welcome message
+app.get('/', (req, res) => {
+    res.json({
+        message: "Welcome to Dallham Testing Apps",
+        status: "online",
+        version: "1.0.0",
+        documentation: "/api",
+        health: "/health"
+    });
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
