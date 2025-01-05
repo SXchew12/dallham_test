@@ -12,6 +12,17 @@ var mustache = require('mustache');
 var _ = require('lodash');
 var striptags = require('striptags');
 
+const assJsonPath = path.join(__dirname, 'ass.json');
+
+// Create default ass.json if it doesn't exist
+if (!fs.existsSync(assJsonPath)) {
+	const defaultContent = {
+		version: 1,
+		subtitles: []
+	};
+	fs.writeFileSync(assJsonPath, JSON.stringify(defaultContent, null, 2));
+}
+
 var ASS = (function (m, fs, util, path, mustache)
 {
 	var ass = {

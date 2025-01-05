@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "vercel-build": "bash ./build.sh",
+    "vercel-build": "prisma generate --no-engine && bash ./build.sh",
     "db:import": "ts-node scripts/import-from-sql.ts",
     "db:verify": "node scripts/verify-db.js",
     "db:reset": "npx prisma db push --force-reset && node scripts/migrate-to-postgres.js",
@@ -22,7 +22,7 @@
     "db:import:all": "npm run db:reset && npm run db:import:admin && npm run db:import:user && npm run db:import:plan && npm run db:import:api && npm run db:import:ai && npm run db:import:web && npm run db:test",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node scripts/migrate-to-postgres.js",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --no-engine",
     "db:push": "prisma db push"
   },
   "keywords": [],
