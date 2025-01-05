@@ -13,24 +13,35 @@ datasource db {
 model Admin {
   id        Int      @id @default(autoincrement())
   role      String   @default("admin")
-  uid       String?
-  email     String?
+  uid       String?  @unique
+  email     String?  @unique
   password  String?
   createdAt DateTime @default(now())
 
   @@map("admin")
 }
 
+// API Keys Model
+model ApiKeys {
+  id                Int      @id @default(autoincrement())
+  open_ai           String?
+  gemini_ai         String?
+  stable_diffusion  String?
+  createdAt         DateTime @default(now())
+
+  @@map("api_keys")
+}
+
 // User Model
 model User {
   id           Int      @id @default(autoincrement())
   role         String   @default("user")
-  uid          String?
+  uid          String?  @unique
   name         String?
-  email        String?
+  email        String?  @unique
   password     String?
   mobile       String?
-  timezone     String   @default("Asia/Kolkata")
+  timezone     String   @default("UTC")
   plan         String?  @db.Text
   plan_expire  String?
   trial        Int      @default(0)
@@ -53,26 +64,15 @@ model Plan {
   speech_to_text Int      @default(0)
   voice_maker    Int      @default(0)
   ai_video       Int      @default(0)
-  validity_days  String   @default("0")
-  gemini_token   String   @default("0")
-  openai_token   String   @default("0")
+  validity_days  String?  @default("0")
+  gemini_token   String?  @default("0")
+  openai_token   String?  @default("0")
   createdAt      DateTime @default(now())
 
   @@map("plan")
 }
 
-// API Keys Model
-model ApiKeys {
-  id               Int      @id @default(autoincrement())
-  open_ai          String?
-  gemini_ai        String?
-  stable_diffusion String?
-  createdAt        DateTime @default(now())
-
-  @@map("api_keys")
-}
-
-// AI Models
+// AI Image Model
 model AiImage {
   id          Int      @id @default(autoincrement())
   uid         String?
@@ -86,21 +86,23 @@ model AiImage {
   @@map("ai_image")
 }
 
+// AI Speech Model
 model AiSpeech {
   id        Int      @id @default(autoincrement())
   uid       String?
   type      String?
   filename  String?
-  output    String?  @db.Text
+  output    String?
   createdAt DateTime @default(now())
 
   @@map("ai_speech")
 }
 
+// AI Voice Model
 model AiVoice {
   id        Int      @id @default(autoincrement())
   uid       String?
-  prompt    String?  @db.Text
+  prompt    String?
   voice     String?
   filename  String?
   createdAt DateTime @default(now())
@@ -108,21 +110,7 @@ model AiVoice {
   @@map("ai_voice")
 }
 
-model AiVideo {
-  id          Int      @id @default(autoincrement())
-  uid         String?
-  audio       String?
-  video       String?
-  caption     String?  @db.Text
-  final_video String?
-  status      String?
-  state       String?  @db.Text
-  createdAt   DateTime @default(now())
-
-  @@map("ai_video")
-}
-
-// Web Configuration Models
+// Web Private Model
 model WebPrivate {
   id               Int      @id @default(autoincrement())
   pay_offline_id   String?
@@ -139,19 +127,20 @@ model WebPrivate {
   @@map("web_private")
 }
 
+// Web Public Model
 model WebPublic {
   id                 Int      @id @default(autoincrement())
   currency_code      String?
-  logo              String?
-  app_name          String?
-  custom_home       String?
-  is_custom_home    Int      @default(0)
-  meta_description  String?  @db.Text
-  currency_symbol   String?
+  logo               String?
+  app_name           String?
+  custom_home        String?
+  is_custom_home     Int      @default(0)
+  meta_description   String?  @db.Text
+  currency_symbol    String?
   home_page_tutorial String?
   login_header_footer Int     @default(0)
-  exchange_rate     String?
-  createdAt         DateTime @default(now())
+  exchange_rate      String?
+  createdAt          DateTime @default(now())
 
   @@map("web_public")
 }
