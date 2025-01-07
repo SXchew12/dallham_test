@@ -18,59 +18,56 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.json({
-        success: false,
-        msg: "Email and password are required",
-      });
-    }
-
-    // Find admin by email using Prisma
     const admin = await prisma.admin.findFirst({
-      where: {
-        email: email
-      }
+      where: { email }
     });
 
     if (!admin) {
       return res.json({
         success: false,
-        msg: "No admin account found with this email",
+        msg: "Invalid credentials"
       });
     }
 
-    // Compare password
-    const compare = await bcrypt.compare(password, admin.password);
-    if (!compare) {
+    const isValid = await bcrypt.compare(password, admin.password);
+    if (!isValid) {
       return res.json({
         success: false,
-        msg: "Invalid password",
+        msg: "Invalid credentials"
       });
     }
 
-    // Generate JWT token
     const token = sign(
       {
-        uid: admin.uid,
+        id: admin.id,
+        email: admin.email,
         role: admin.role,
+        uid: admin.uid
       },
-      process.env.JWTKEY
+      process.env.JWTKEY,
+      { expiresIn: "7d" }
     );
 
     res.json({
       success: true,
       msg: "Login successful",
-      token,
-      admin: {
-        uid: admin.uid,
-        email: admin.email,
-        role: admin.role,
-      },
+      data: {
+        token,
+        user: {
+          id: admin.id,
+          email: admin.email,
+          role: admin.role,
+          uid: admin.uid
+        }
+      }
     });
-
   } catch (err) {
-    console.error('Login error:', err);
-    res.json({ success: false, msg: "server error", error: err.message });
+    console.error(err);
+    res.json({
+      success: false,
+      msg: "Server error",
+      error: err.message
+    });
   }
 });
 

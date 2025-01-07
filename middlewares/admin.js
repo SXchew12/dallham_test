@@ -1,36 +1,59 @@
-const jwt = require("jsonwebtoken");
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { verify } = require("jsonwebtoken");
+const prisma = require("../database/prisma");
 
-const adminValidator = async (req, res, next) => {
+module.exports = async (req, res, next) => {
   try {
-    const token = req.headers.token;
+    // Check if Authorization header exists
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({
+        success: false,
+        msg: "No token found"
+      });
+    }
+
+    // Verify Bearer token format
+    const token = authHeader.split(' ')[1];
     if (!token) {
-      return res.json({ msg: "No token found" });
+      return res.status(401).json({
+        success: false,
+        msg: "Invalid token format"
+      });
     }
 
-    const decode = jwt.verify(token, process.env.JWTKEY);
-    if (!decode) {
-      return res.json({ msg: "Invalid token" });
+    // Verify token
+    const decoded = verify(token, process.env.JWTKEY);
+    if (!decoded) {
+      return res.status(401).json({
+        success: false,
+        msg: "Invalid token"
+      });
     }
 
+    // Check if admin exists
     const admin = await prisma.admin.findFirst({
       where: {
-        uid: decode.uid,
+        id: decoded.id,
+        email: decoded.email,
         role: 'admin'
       }
     });
 
     if (!admin) {
-      return res.json({ msg: "Admin not found" });
+      return res.status(401).json({
+        success: false,
+        msg: "Unauthorized access"
+      });
     }
 
-    req.decode = decode;
+    req.decode = decoded;
     next();
   } catch (err) {
-    console.error(err);
-    res.json({ msg: "Something went wrong", err });
+    console.error('Admin middleware error:', err);
+    return res.status(401).json({
+      success: false,
+      msg: "Authentication failed",
+      error: err.message
+    });
   }
 };
-
-module.exports = adminValidator;
