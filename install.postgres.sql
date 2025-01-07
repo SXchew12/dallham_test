@@ -296,4 +296,31 @@ SELECT setval(pg_get_serial_sequence('smtp', 'id'), 2, false);
 SELECT setval(pg_get_serial_sequence('testimonial', 'id'), 7, false);
 SELECT setval(pg_get_serial_sequence('user', 'id'), 4, false);
 SELECT setval(pg_get_serial_sequence('web_private', 'id'), 2, false);
-SELECT setval(pg_get_serial_sequence('web_public', 'id'), 2, false); 
+SELECT setval(pg_get_serial_sequence('web_public', 'id'), 2, false);
+
+-- Insert default FAQs
+INSERT INTO faq (question, answer, "createdAt") VALUES
+('What is AI Platform?', 'AI Platform is a comprehensive solution that combines multiple AI capabilities including chat, image generation, code writing, speech-to-text, voice generation, and AI video creation.', CURRENT_TIMESTAMP),
+('How do I get started?', 'Simply sign up for an account, choose a plan that suits your needs, and start exploring our various AI features.', CURRENT_TIMESTAMP),
+('What payment methods do you accept?', 'We accept major credit cards, PayPal, and other popular payment methods. All transactions are secure and encrypted.', CURRENT_TIMESTAMP),
+('Is there a free trial?', 'Yes, we offer a trial period for new users to test our platform''s features.', CURRENT_TIMESTAMP),
+('How secure is my data?', 'We take data security seriously and employ industry-standard encryption and security measures to protect your information.', CURRENT_TIMESTAMP);
+
+-- Insert default pages
+INSERT INTO page (slug, title, content, permanent, "createdAt") VALUES
+('privacy-policy', 'Privacy Policy', 'This is the default privacy policy content. Please update it according to your requirements.', 1, CURRENT_TIMESTAMP),
+('terms-and-conditions', 'Terms and Conditions', 'This is the default terms and conditions content. Please update it according to your requirements.', 1, CURRENT_TIMESTAMP),
+('about-us', 'About Us', 'Welcome to AI Platform! We are dedicated to providing cutting-edge AI solutions.', 1, CURRENT_TIMESTAMP),
+('contact-us', 'Contact Us', 'Get in touch with us for any questions or support.', 1, CURRENT_TIMESTAMP);
+
+-- Insert default testimonials
+INSERT INTO testimonial (title, description, reviewer_name, reviewer_position, "createdAt") VALUES
+('Excellent AI Platform', 'This platform has transformed how we handle our AI needs. Highly recommended!', 'John Smith', 'CEO, Tech Solutions', CURRENT_TIMESTAMP),
+('Great Features', 'The variety of AI tools available is impressive. Very user-friendly interface.', 'Sarah Johnson', 'Marketing Director', CURRENT_TIMESTAMP),
+('Outstanding Support', 'The customer support team is very responsive and helpful.', 'Michael Brown', 'Developer', CURRENT_TIMESTAMP);
+
+-- Insert default partners
+INSERT INTO partners (filename, "createdAt") VALUES
+('partner1.png', CURRENT_TIMESTAMP),
+('partner2.png', CURRENT_TIMESTAMP),
+('partner3.png', CURRENT_TIMESTAMP); 

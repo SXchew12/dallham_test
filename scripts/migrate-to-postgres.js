@@ -100,6 +100,99 @@ async function main() {
       }
     })
 
+    // Insert default FAQs
+    console.log('❓ Creating default FAQs...')
+    await prisma.faq.createMany({
+      data: [
+        {
+          question: 'What is AI Platform?',
+          answer: 'AI Platform is a comprehensive solution that combines multiple AI capabilities including chat, image generation, code writing, speech-to-text, voice generation, and AI video creation.'
+        },
+        {
+          question: 'How do I get started?',
+          answer: 'Simply sign up for an account, choose a plan that suits your needs, and start exploring our various AI features.'
+        },
+        {
+          question: 'What payment methods do you accept?',
+          answer: 'We accept major credit cards, PayPal, and other popular payment methods. All transactions are secure and encrypted.'
+        },
+        {
+          question: 'Is there a free trial?',
+          answer: 'Yes, we offer a trial period for new users to test our platform\'s features.'
+        },
+        {
+          question: 'How secure is my data?',
+          answer: 'We take data security seriously and employ industry-standard encryption and security measures to protect your information.'
+        }
+      ]
+    })
+
+    // Insert default pages
+    console.log('📄 Creating default pages...')
+    await prisma.page.createMany({
+      data: [
+        {
+          slug: 'privacy-policy',
+          title: 'Privacy Policy',
+          content: 'This is the default privacy policy content. Please update it according to your requirements.',
+          permanent: 1
+        },
+        {
+          slug: 'terms-and-conditions',
+          title: 'Terms and Conditions',
+          content: 'This is the default terms and conditions content. Please update it according to your requirements.',
+          permanent: 1
+        },
+        {
+          slug: 'about-us',
+          title: 'About Us',
+          content: 'Welcome to AI Platform! We are dedicated to providing cutting-edge AI solutions.',
+          permanent: 1
+        },
+        {
+          slug: 'contact-us',
+          title: 'Contact Us',
+          content: 'Get in touch with us for any questions or support.',
+          permanent: 1
+        }
+      ]
+    })
+
+    // Insert default testimonials
+    console.log('💬 Creating default testimonials...')
+    await prisma.testimonial.createMany({
+      data: [
+        {
+          title: 'Excellent AI Platform',
+          description: 'This platform has transformed how we handle our AI needs. Highly recommended!',
+          reviewer_name: 'John Smith',
+          reviewer_position: 'CEO, Tech Solutions'
+        },
+        {
+          title: 'Great Features',
+          description: 'The variety of AI tools available is impressive. Very user-friendly interface.',
+          reviewer_name: 'Sarah Johnson',
+          reviewer_position: 'Marketing Director'
+        },
+        {
+          title: 'Outstanding Support',
+          description: 'The customer support team is very responsive and helpful.',
+          reviewer_name: 'Michael Brown',
+          reviewer_position: 'Developer'
+        }
+      ]
+    })
+
+    // Insert default partners
+    console.log('🤝 Creating default partners...')
+    await prisma.partners.createMany({
+      data: [
+        { filename: 'partner1.png' },
+        { filename: 'partner2.png' },
+        { filename: 'partner3.png' }
+      ]
+    })
+
     console.log('✅ Database migration completed successfully!')
   } catch (error) {
     console.error('❌ Migration failed:', error)
