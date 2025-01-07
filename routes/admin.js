@@ -815,4 +815,70 @@ router.post("/update_user", adminValidator, async (req, res) => {
   }
 });
 
+// Get payment gateway settings for admin
+router.get("/get_payment_gateway_admin", adminValidator, async (req, res) => {
+  try {
+    const [webPrivate, webPublic] = await Promise.all([
+      prisma.webPrivate.findFirst(),
+      prisma.webPublic.findFirst()
+    ]);
+
+    const paymentSettings = {
+      offline_active: webPrivate?.offline_active || '0',
+      stripe_active: webPrivate?.stripe_active || '0',
+      paystack_active: webPrivate?.paystack_active || '0',
+      currency_code: webPublic?.currency_code || 'USD',
+      currency_symbol: webPublic?.currency_symbol || '$',
+      exchange_rate: webPublic?.exchange_rate || '1'
+    };
+
+    res.json({
+      success: true,
+      data: paymentSettings
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, msg: "Server error", error: err.message });
+  }
+});
+
+// Update payment gateway settings
+router.post("/update_pay_gateway", adminValidator, async (req, res) => {
+  try {
+    const { 
+      offline_active,
+      stripe_active,
+      paystack_active,
+      currency_code,
+      currency_symbol,
+      exchange_rate
+    } = req.body;
+
+    await Promise.all([
+      prisma.webPrivate.updateMany({
+        data: {
+          offline_active: offline_active || '0',
+          stripe_active: stripe_active || '0',
+          paystack_active: paystack_active || '0'
+        }
+      }),
+      prisma.webPublic.updateMany({
+        data: {
+          currency_code: currency_code || 'USD',
+          currency_symbol: currency_symbol || '$',
+          exchange_rate: exchange_rate || '1'
+        }
+      })
+    ]);
+
+    res.json({
+      success: true,
+      msg: "Payment gateway settings updated successfully"
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, msg: "Server error", error: err.message });
+  }
+});
+
 module.exports = router;
