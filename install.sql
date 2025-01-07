@@ -28,13 +28,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admin` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `role` varchar(999) DEFAULT 'admin',
   `uid` varchar(999) DEFAULT NULL,
   `email` varchar(999) DEFAULT NULL,
   `password` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -44,14 +43,6 @@ CREATE TABLE `admin` (
 INSERT INTO `admin` (`id`, `role`, `uid`, `email`, `password`, `createdAt`) VALUES
 (1, 'admin', 'lnAnUIUnBBtXhcj5VHdaA2KERBgCTkWz', 'admin@admin.com', '$2b$10$NpdbfaW2xj9dEJpiz9fyUuYbsY7JV9H7sTifhdPqTeUuVhWe2fex6', '2024-07-21 13:59:47');
 
--- Add a test user with full access plan
-INSERT INTO `user` (`id`, `role`, `uid`, `name`, `email`, `password`, `mobile`, `timezone`, `plan`, `plan_expire`, `trial`, `api_key`, `gemini_token`, `openai_token`, `createdAt`) VALUES 
-(1, 'user', 'testuser123', 'Test User', 'test@test.com', '$2b$10$NpdbfaW2xj9dEJpiz9fyUuYbsY7JV9H7sTifhdPqTeUuVhWe2fex6', '1234567890', 'UTC', '{"id":1,"name":"Full Access","price":"0","in_app_chat":1,"image_maker":1,"code_writer":1,"speech_to_text":1,"voice_maker":1,"ai_video":1,"validity_days":"365","gemini_token":"999999","openai_token":"999999"}', '1735689600000', 0, NULL, '999999', '999999', CURRENT_TIMESTAMP);
-
--- Add a free plan for testing
-INSERT INTO `plan` (`id`, `name`, `price`, `in_app_chat`, `image_maker`, `code_writer`, `speech_to_text`, `voice_maker`, `ai_video`, `validity_days`, `gemini_token`, `openai_token`, `createdAt`) VALUES
-(1, 'Test Plan', '0', 1, 1, 1, 1, 1, 1, '365', '999999', '999999', CURRENT_TIMESTAMP);
-
 -- --------------------------------------------------------
 
 --
@@ -59,15 +50,14 @@ INSERT INTO `plan` (`id`, `name`, `price`, `in_app_chat`, `image_maker`, `code_w
 --
 
 CREATE TABLE `ai_image` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `uid` varchar(999) DEFAULT NULL,
   `ai_type` varchar(999) DEFAULT NULL,
   `image_size` varchar(999) DEFAULT NULL,
   `image_style` varchar(999) DEFAULT NULL,
   `prompt` varchar(999) DEFAULT NULL,
   `filename` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -111,13 +101,12 @@ INSERT INTO `ai_model` (`id`, `model_id`, `uid`, `name`, `icon`, `train_data`, `
 --
 
 CREATE TABLE `ai_speech` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `uid` varchar(999) DEFAULT NULL,
   `type` varchar(999) DEFAULT NULL,
   `filename` varchar(999) DEFAULT NULL,
   `output` longtext DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -135,7 +124,7 @@ INSERT INTO `ai_speech` (`id`, `uid`, `type`, `filename`, `output`, `createdAt`)
 --
 
 CREATE TABLE `ai_video` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `uid` varchar(999) DEFAULT NULL,
   `audio` varchar(999) DEFAULT NULL,
   `video` varchar(999) DEFAULT NULL,
@@ -143,8 +132,7 @@ CREATE TABLE `ai_video` (
   `final_video` varchar(999) DEFAULT NULL,
   `status` varchar(999) DEFAULT NULL,
   `state` longtext DEFAULT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -162,13 +150,12 @@ INSERT INTO `ai_video` (`id`, `uid`, `audio`, `video`, `caption`, `final_video`,
 --
 
 CREATE TABLE `ai_voice` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `uid` varchar(999) DEFAULT NULL,
   `prompt` longtext DEFAULT NULL,
   `voice` varchar(999) DEFAULT NULL,
   `filename` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -185,12 +172,11 @@ INSERT INTO `ai_voice` (`id`, `uid`, `prompt`, `voice`, `filename`, `createdAt`)
 --
 
 CREATE TABLE `api_keys` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `open_ai` varchar(999) DEFAULT NULL,
   `gemini_ai` varchar(999) DEFAULT NULL,
   `stable_diffusion` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -207,13 +193,12 @@ INSERT INTO `api_keys` (`id`, `open_ai`, `gemini_ai`, `stable_diffusion`, `creat
 --
 
 CREATE TABLE `chat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `chat_id` varchar(999) DEFAULT NULL,
   `uid` varchar(999) DEFAULT NULL,
   `title` varchar(999) DEFAULT NULL,
   `model_id` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -230,13 +215,12 @@ INSERT INTO `chat` (`id`, `chat_id`, `uid`, `title`, `model_id`, `createdAt`) VA
 --
 
 CREATE TABLE `contact_form` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `email` varchar(999) DEFAULT NULL,
   `name` varchar(999) DEFAULT NULL,
   `mobile` varchar(999) DEFAULT NULL,
   `content` longtext DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -253,12 +237,11 @@ INSERT INTO `contact_form` (`id`, `email`, `name`, `mobile`, `content`, `created
 --
 
 CREATE TABLE `embed_chatbot` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `uid` varchar(999) DEFAULT NULL,
   `model_id` varchar(999) DEFAULT NULL,
   `bot_id` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -275,14 +258,13 @@ INSERT INTO `embed_chatbot` (`id`, `uid`, `model_id`, `bot_id`, `createdAt`) VAL
 --
 
 CREATE TABLE `embed_chats` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `bot_id` varchar(999) DEFAULT NULL,
   `user_email` varchar(999) DEFAULT NULL,
   `user_mobile` varchar(999) DEFAULT NULL,
   `user_name` varchar(999) DEFAULT NULL,
   `chat_id` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -299,11 +281,10 @@ INSERT INTO `embed_chats` (`id`, `bot_id`, `user_email`, `user_mobile`, `user_na
 --
 
 CREATE TABLE `faq` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `question` longtext DEFAULT NULL,
   `answer` longtext DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -323,14 +304,13 @@ INSERT INTO `faq` (`id`, `question`, `answer`, `createdAt`) VALUES
 --
 
 CREATE TABLE `orders` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `uid` varchar(999) DEFAULT NULL,
   `payment_mode` varchar(999) DEFAULT NULL,
   `amount` varchar(999) DEFAULT NULL,
   `data` longtext DEFAULT NULL,
   `s_token` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -353,14 +333,13 @@ INSERT INTO `orders` (`id`, `uid`, `payment_mode`, `amount`, `data`, `s_token`, 
 --
 
 CREATE TABLE `page` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `slug` varchar(999) DEFAULT NULL,
   `title` varchar(999) DEFAULT NULL,
   `image` varchar(999) DEFAULT NULL,
   `content` longtext DEFAULT NULL,
   `permanent` int(1) DEFAULT 0,
-  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -381,10 +360,9 @@ INSERT INTO `page` (`id`, `slug`, `title`, `image`, `content`, `permanent`, `cre
 --
 
 CREATE TABLE `partners` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `filename` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -407,7 +385,7 @@ INSERT INTO `partners` (`id`, `filename`, `createdAt`) VALUES
 --
 
 CREATE TABLE `plan` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `name` varchar(999) DEFAULT NULL,
   `price` varchar(999) DEFAULT NULL,
   `in_app_chat` int(1) DEFAULT 0,
@@ -419,8 +397,7 @@ CREATE TABLE `plan` (
   `validity_days` varchar(999) DEFAULT '0',
   `gemini_token` varchar(999) DEFAULT '0',
   `openai_token` varchar(999) DEFAULT '0',
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -439,13 +416,12 @@ INSERT INTO `plan` (`id`, `name`, `price`, `in_app_chat`, `image_maker`, `code_w
 --
 
 CREATE TABLE `smtp` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `email` varchar(999) DEFAULT NULL,
   `host` varchar(999) DEFAULT NULL,
   `port` varchar(999) DEFAULT NULL,
   `password` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -462,13 +438,12 @@ INSERT INTO `smtp` (`id`, `email`, `host`, `port`, `password`, `createdAt`) VALU
 --
 
 CREATE TABLE `testimonial` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `title` varchar(999) DEFAULT NULL,
   `description` longtext DEFAULT NULL,
   `reviewer_name` varchar(999) DEFAULT NULL,
   `reviewer_position` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -487,22 +462,21 @@ INSERT INTO `testimonial` (`id`, `title`, `description`, `reviewer_name`, `revie
 --
 
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `role` varchar(999) DEFAULT 'user',
   `uid` varchar(999) DEFAULT NULL,
   `name` varchar(999) DEFAULT NULL,
   `email` varchar(999) DEFAULT NULL,
   `password` varchar(999) DEFAULT NULL,
   `mobile` varchar(999) DEFAULT NULL,
-  `timezone` varchar(999) DEFAULT 'UTC',
+  `timezone` varchar(999) DEFAULT 'Asia/Kolkata',
   `plan` longtext DEFAULT NULL,
   `plan_expire` varchar(999) DEFAULT NULL,
   `trial` int(1) DEFAULT 0,
   `api_key` varchar(999) DEFAULT NULL,
   `gemini_token` varchar(999) DEFAULT '0',
   `openai_token` varchar(999) DEFAULT '0',
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -519,7 +493,7 @@ INSERT INTO `user` (`id`, `role`, `uid`, `name`, `email`, `password`, `mobile`, 
 --
 
 CREATE TABLE `web_private` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `pay_offline_id` varchar(999) DEFAULT NULL,
   `pay_offline_key` varchar(999) DEFAULT NULL,
   `offline_active` varchar(999) DEFAULT NULL,
@@ -529,8 +503,7 @@ CREATE TABLE `web_private` (
   `pay_paystack_id` varchar(999) DEFAULT NULL,
   `pay_paystack_key` varchar(999) DEFAULT NULL,
   `paystack_active` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -547,7 +520,7 @@ INSERT INTO `web_private` (`id`, `pay_offline_id`, `pay_offline_key`, `offline_a
 --
 
 CREATE TABLE `web_public` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `currency_code` varchar(999) DEFAULT NULL,
   `logo` varchar(999) DEFAULT NULL,
   `app_name` varchar(999) DEFAULT NULL,
@@ -558,8 +531,7 @@ CREATE TABLE `web_public` (
   `home_page_tutorial` varchar(999) DEFAULT NULL,
   `login_header_footer` int(1) DEFAULT 0,
   `exchange_rate` varchar(999) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -833,4 +805,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
- 

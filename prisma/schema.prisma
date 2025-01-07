@@ -55,19 +55,19 @@ model User {
 
 // Plan Model
 model Plan {
-  id             Int      @id @default(autoincrement())
-  name           String?
-  price          String?
-  in_app_chat    Int      @default(0)
-  image_maker    Int      @default(0)
-  code_writer    Int      @default(0)
-  speech_to_text Int      @default(0)
-  voice_maker    Int      @default(0)
-  ai_video       Int      @default(0)
-  validity_days  String?  @default("0")
-  gemini_token   String?  @default("0")
-  openai_token   String?  @default("0")
-  createdAt      DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  name            String?
+  price           String?  @default("0")
+  in_app_chat     Int      @default(0)
+  image_maker     Int      @default(0)
+  code_writer     Int      @default(0)
+  speech_to_text  Int      @default(0)
+  voice_maker     Int      @default(0)
+  ai_video        Int      @default(0)
+  validity_days   String?  @default("0")
+  gemini_token    String?  @default("0")
+  openai_token    String?  @default("0")
+  createdAt       DateTime @default(now())
 
   @@map("plan")
 }
@@ -112,17 +112,11 @@ model AiVoice {
 
 // Web Private Model
 model WebPrivate {
-  id               Int      @id @default(autoincrement())
-  pay_offline_id   String?
-  pay_offline_key  String?
-  offline_active   String?
-  pay_stripe_id    String?
-  pay_stripe_key   String?
-  stripe_active    String?
-  pay_paystack_id  String?
-  pay_paystack_key String?
-  paystack_active  String?
-  createdAt        DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  offline_active  String?  @default("0")
+  stripe_active   String?  @default("0")
+  paystack_active String?  @default("0")
+  createdAt       DateTime @default(now())
 
   @@map("web_private")
 }
@@ -143,4 +137,136 @@ model WebPublic {
   createdAt          DateTime @default(now())
 
   @@map("web_public")
+}
+
+// AI Model
+model AiModel {
+  id        Int      @id @default(autoincrement())
+  uid       String?
+  model_name String?
+  prompt    String?  @db.Text
+  response  String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("ai_model")
+}
+
+// Chat
+model Chat {
+  id         Int      @id @default(autoincrement())
+  uid        String?
+  model_name String?
+  prompt     String?  @db.Text
+  response   String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@map("chat")
+}
+
+// Contact Form
+model ContactForm {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  email     String?
+  subject   String?
+  message   String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("contact_form")
+}
+
+// Embed Chatbot
+model EmbedChatbot {
+  id        Int      @id @default(autoincrement())
+  uid       String?
+  name      String?
+  prompt    String?  @db.Text
+  response  String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("embed_chatbot")
+}
+
+// Embed Chats
+model EmbedChats {
+  id         Int      @id @default(autoincrement())
+  uid        String?
+  chatbot_id String?
+  prompt     String?  @db.Text
+  response   String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@map("embed_chats")
+}
+
+// Orders
+model Orders {
+  id         Int      @id @default(autoincrement())
+  uid        String?
+  order_id   String?
+  plan_id    String?
+  payment_id String?
+  price      String?
+  currency   String?
+  payment_by String?
+  status     String?
+  createdAt  DateTime @default(now())
+
+  @@map("orders")
+}
+
+// SMTP
+model Smtp {
+  id        Int      @id @default(autoincrement())
+  host      String?
+  port      String?
+  user      String?
+  pass      String?
+  createdAt DateTime @default(now())
+
+  @@map("smtp")
+}
+
+// Partners
+model Partners {
+  id        Int      @id @default(autoincrement())
+  filename  String?
+  createdAt DateTime @default(now())
+
+  @@map("partners")
+}
+
+// FAQ
+model Faq {
+  id        Int      @id @default(autoincrement())
+  question  String?  @db.Text
+  answer    String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("faq")
+}
+
+// Page
+model Page {
+  id        Int      @id @default(autoincrement())
+  slug      String?
+  title     String?
+  image     String?
+  content   String?  @db.Text
+  permanent Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("page")
+}
+
+// Testimonial
+model Testimonial {
+  id                Int      @id @default(autoincrement())
+  title            String?
+  description      String?  @db.Text
+  reviewer_name    String?
+  reviewer_position String?
+  createdAt        DateTime @default(now())
+
+  @@map("testimonial")
 }
